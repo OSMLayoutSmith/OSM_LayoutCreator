@@ -1,0 +1,53 @@
+Knowledge S09
+
+* agentes basados en conocimiento
+usan logica proposicional
+ej
+si no llovio, Harry visito a Hagrid hoy
+Harry visito a hagrid o Dumbledore hoy, no a ambos
+harry visito a Dumbledore hoy
+
+QED: harry no visito a hagrid / hoy llovio
+
+* lógica
+sentence: afirmacion sobre el mundo en un lenguaje de representacion del conocimiento
+lenguaje: logica proposic.
+simbolos: P,Q,R...
+conectores logicos: and, or...
+
+* modelo
+asignacion de un valor de verdad a cada variable
+ej: dado A,B  se asignará {V-F, F-V, V-V....} respectivamente
+
+* knowledge base
+conjunto de sentences conocidas por un agente basado en conocimiento
+
+* entailment (implicacion)
+A |= B (|= va pegado)
+En tanto A sea V, B también es
+ej:
+si no llovio, Harry visito a Hagrid hoy
+Harry visito a hagrid o Dumbledore hoy, no a ambos
+harry visito a Dumbledore hoy
+
+QED: harry no visito a hagrid / hoy llovio
+
+Inferencia
+EJ2.
+P: martes
+Q: llueve
+R: harry sale a correr
+KB: (P & !Q) -> R 
+
+* Model checking
+Para determinar si KB |= A
+1. se enuera todos los posibles modelos
+2. si en todos los modelos donde KB es V, A tambien QED KB |= A
+3 sino, entonces falso
+
+
+
+ejercicio
+si no llovio (!P), Harry visito a Hagrid hoy (Q)		!P -> Q
+Harry visito a hagrid (Q) o Dumbledore hoy (R), no a ambos	Q (+) R 
+harry visito a Dumbledore hoy (R)				R
