@@ -5,29 +5,527 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OSMTracker Layout Creator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .main-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .phone-mockup {
+            position: sticky;
+            top: 20px;
+            background: #1a1a1a;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 8px solid #333;
+        }
+
+        .phone-screen {
+            background: #2d2d2d;
+            border-radius: 20px;
+            padding: 20px;
+            min-height: 600px;
+            position: relative;
+        }
+
+        .phone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .phone-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .app-header {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .app-subtitle {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mock-button {
+            background: #404040;
+            border-radius: 12px;
+            padding: 20px 10px;
+            text-align: center;
+            color: white;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-height: 80px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mock-button:hover {
+            background: #505050;
+            transform: translateY(-2px);
+        }
+
+        .mock-button .icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .mock-button.has-custom-icon .icon {
+            background-size: cover;
+            background-position: center;
+        }
+
+        .reset-button {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background: #ff3742;
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .file-upload-section {
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-section:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .file-upload-section input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        .file-upload-label:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .add-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+        }
+
+        .add-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(72, 187, 120, 0.3);
+        }
+
+        .add-button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .button-list {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .button-item {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .button-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .button-info {
+            flex: 1;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .button-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #3182ce;
+        }
+
+        .btn-delete {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #e53e3e;
+        }
+
+        .download-button {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .download-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-modal {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #38a169;
+        }
+
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-cancel:hover {
+            background: #cbd5e0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .main-panel {
+                padding: 20px;
+            }
+            
+            .phone-mockup {
+                position: relative;
+                margin: 0 auto;
+                max-width: 300px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>OSMTracker Layout Creator</h1>
-    
-    <label>Nombre del Layout: <input type="text" id="layoutName"></label><br>
-    <label>Nombre Descriptivo: <input type="text" id="layoutName_2"></label><br>
-    <label>Descripción: <input type="text" id="layoutDescription"></label><br>
-    <label>Idioma: 
-        <select id="language">
-        </select>
-    </label><br>
-    
-    <input type="file" id="iconUploader" accept="image/png">
-    <button onclick="addButton()">Agregar Botón</button>
-    <br>
-    
-    <ul id="buttonList"></ul>
-    
-    <button onclick="downloadLayout()">Descargar Layout</button>
-    
+    <div class="container">
+        <div class="main-panel">
+            <h1>OSMTracker Layout Creator</h1>
+            
+            <div class="form-group">
+                <label for="layoutName">Layout Name</label>
+                <input type="text" id="layoutName" placeholder="Enter layout name">
+            </div>
+            
+            <div class="form-group">
+                <label for="layoutName_2">Descriptive Layout Title</label>
+                <input type="text" id="layoutName_2" placeholder="Enter descriptive title">
+            </div>
+            
+            <div class="form-group">
+                <label for="layoutDescription">Description</label>
+                <input type="text" id="layoutDescription" placeholder="Enter description">
+            </div>
+            
+            <div class="form-group">
+                <label for="language">Language</label>
+                <select id="language">
+                    <option value="">Choose a language</option>
+                </select>
+            </div>
+            
+            <div class="file-upload-section">
+                <label for="iconUploader" class="file-upload-label">
+                    📁 Choose Icon
+                </label>
+                <input type="file" id="iconUploader" accept="image/png">
+                <p style="color: #718096; font-size: 14px;">Select a PNG icon for your button</p>
+            </div>
+            
+            <button class="add-button" onclick="addButton()" id="addButtonBtn" disabled>
+                + Add Button
+            </button>
+            
+            <div class="button-list" id="buttonList">
+                <p style="color: #718096; text-align: center; font-style: italic;">No buttons added yet</p>
+            </div>
+            
+            <button class="download-button" onclick="downloadLayout()">
+                📥 Download Layout
+            </button>
+        </div>
+        
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="phone-header">
+                    <span>9:41</span>
+                    <div class="phone-status">
+                        <span>●●●●</span>
+                        <span>📶</span>
+                        <span>🔋</span>
+                    </div>
+                </div>
+                
+                <div class="app-header">Grabadora de trazas: #18</div>
+                <div class="app-subtitle">📍 238° Precisión 8m (18/21)</div>
+                
+                <div class="button-grid" id="mockButtonGrid">
+                    <div class="mock-button">
+                        <div class="icon">🎤</div>
+                        <span>Grabar voz</span>
+                    </div>
+                    <div class="mock-button">
+                        <div class="icon">📷</div>
+                        <span>Tomar foto</span>
+                    </div>
+                    <div class="mock-button">
+                        <div class="icon">📝</div>
+                        <span>Nota de texto</span>
+                    </div>
+                    <div class="mock-button">
+                        <div class="icon">🗑️</div>
+                        <span>Basurero</span>
+                    </div>
+                    <div class="mock-button">
+                        <div class="icon">➕</div>
+                        <span>Nuevo</span>
+                    </div>
+                </div>
+                
+                <button class="reset-button" onclick="resetMockup()">
+                    🔄 Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for button editing -->
+    <div class="modal" id="buttonModal">
+        <div class="modal-content">
+            <div class="modal-header">Button Name</div>
+            <input type="text" id="buttonNameInput" placeholder="Enter button name" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;">
+            <div style="color: #718096; font-size: 14px; margin-bottom: 12px;">Image</div>
+            <div style="color: #a0aec0; font-size: 12px;" id="buttonImageName">imagen del arbol</div>
+            <div class="modal-actions">
+                <button class="btn-modal btn-save" onclick="saveButton()">Guardar</button>
+                <button class="btn-modal btn-cancel" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const languages = {"es": "Español", "en": "English", "fr": "Français", "de": "Deutsch"};
         const languageSelect = document.getElementById("language");
+        const iconUploader = document.getElementById("iconUploader");
+        const addButtonBtn = document.getElementById("addButtonBtn");
+        
+        // Populate language dropdown
         Object.keys(languages).forEach(code => {
             let option = document.createElement("option");
             option.value = code;
@@ -37,57 +535,178 @@
         
         let buttonList = [];
         let iconCounter = 1;
+        let currentEditingIndex = -1;
+        let currentIconData = null;
+        
+        // Enable/disable add button based on icon upload
+        iconUploader.addEventListener('change', function() {
+            addButtonBtn.disabled = !this.files[0];
+            if (this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentIconData = e.target.result.split(',')[1];
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
         
         function addButton() {
-            const fileInput = document.getElementById("iconUploader");
-            if (!fileInput.files[0]) {
+            if (!currentIconData) {
                 alert("Por favor, selecciona un icono.");
                 return;
             }
-            const label = prompt("Nombre del botón:");
-            if (!label) return;
             
-            const reader = new FileReader();
-            reader.onload = function (event) {
+            currentEditingIndex = -1;
+            document.getElementById('buttonNameInput').value = '';
+            document.getElementById('buttonImageName').textContent = iconUploader.files[0].name;
+            showModal();
+        }
+        
+        function showModal() {
+            document.getElementById('buttonModal').classList.add('show');
+        }
+        
+        function closeModal() {
+            document.getElementById('buttonModal').classList.remove('show');
+        }
+        
+        function saveButton() {
+            const buttonName = document.getElementById('buttonNameInput').value.trim();
+            if (!buttonName) {
+                alert("Por favor, ingresa un nombre para el botón.");
+                return;
+            }
+            
+            if (currentEditingIndex === -1) {
+                // Adding new button
                 buttonList.push({
-                    label,
+                    label: buttonName,
                     icon: `icon_${iconCounter}.png`,
-                    data: event.target.result.split(',')[1] 
+                    data: currentIconData
                 });
                 iconCounter++;
+            } else {
+                // Editing existing button
+                buttonList[currentEditingIndex].label = buttonName;
+            }
+            
+            renderButtons();
+            updateMockup();
+            closeModal();
+            
+            // Reset file input and disable add button
+            iconUploader.value = '';
+            addButtonBtn.disabled = true;
+            currentIconData = null;
+        }
+        
+        function editButton(index) {
+            currentEditingIndex = index;
+            document.getElementById('buttonNameInput').value = buttonList[index].label;
+            document.getElementById('buttonImageName').textContent = buttonList[index].icon;
+            showModal();
+        }
+        
+        function deleteButton(index) {
+            if (confirm('¿Estás seguro de que quieres eliminar este botón?')) {
+                buttonList.splice(index, 1);
                 renderButtons();
-            };
-            reader.readAsDataURL(fileInput.files[0]);
+                updateMockup();
+            }
         }
         
         function renderButtons() {
             const list = document.getElementById("buttonList");
+            
+            if (buttonList.length === 0) {
+                list.innerHTML = '<p style="color: #718096; text-align: center; font-style: italic;">No buttons added yet</p>';
+                return;
+            }
+            
             list.innerHTML = "";
             buttonList.forEach((btn, index) => {
-                const li = document.createElement("li");
-                li.textContent = `${btn.label} (${btn.icon})`;
+                const div = document.createElement("div");
+                div.className = "button-item";
                 
-                const editButton = document.createElement("button");
-                editButton.textContent = "Editar";
-                editButton.onclick = () => {
-                    const newLabel = prompt("Nuevo nombre para el botón:", btn.label);
-                    if (newLabel) {
-                        buttonList[index].label = newLabel;
-                        renderButtons();
-                    }
-                };
+                div.innerHTML = `
+                    <div class="button-info">${btn.label} (${btn.icon})</div>
+                    <div class="button-actions">
+                        <button class="btn-edit" onclick="editButton(${index})">Edit</button>
+                        <button class="btn-delete" onclick="deleteButton(${index})">Delete</button>
+                    </div>
+                `;
                 
-                const delButton = document.createElement("button");
-                delButton.textContent = "Eliminar";
-                delButton.onclick = () => {
-                    buttonList.splice(index, 1);
-                    renderButtons();
-                };
-                
-                li.appendChild(editButton);
-                li.appendChild(delButton);
-                list.appendChild(li);
+                list.appendChild(div);
             });
+        }
+        
+        function updateMockup() {
+            const grid = document.getElementById('mockButtonGrid');
+            
+            // Clear existing custom buttons, keep default ones
+            const defaultButtons = [
+                { icon: '🎤', label: 'Grabar voz' },
+                { icon: '📷', label: 'Tomar foto' },
+                { icon: '📝', label: 'Nota de texto' },
+                { icon: '🗑️', label: 'Basurero' },
+                { icon: '➕', label: 'Nuevo' }
+            ];
+            
+            grid.innerHTML = '';
+            
+            // Add default buttons
+            defaultButtons.forEach(btn => {
+                const button = document.createElement('div');
+                button.className = 'mock-button';
+                button.innerHTML = `
+                    <div class="icon">${btn.icon}</div>
+                    <span>${btn.label}</span>
+                `;
+                grid.appendChild(button);
+            });
+            
+            // Add custom buttons
+            buttonList.forEach(btn => {
+                const button = document.createElement('div');
+                button.className = 'mock-button has-custom-icon';
+                
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'icon';
+                iconDiv.style.backgroundImage = `url(data:image/png;base64,${btn.data})`;
+                
+                const label = document.createElement('span');
+                label.textContent = btn.label;
+                
+                button.appendChild(iconDiv);
+                button.appendChild(label);
+                grid.appendChild(button);
+            });
+        }
+        
+        function resetMockup() {
+            const grid = document.getElementById('mockButtonGrid');
+            grid.innerHTML = `
+                <div class="mock-button">
+                    <div class="icon">🎤</div>
+                    <span>Grabar voz</span>
+                </div>
+                <div class="mock-button">
+                    <div class="icon">📷</div>
+                    <span>Tomar foto</span>
+                </div>
+                <div class="mock-button">
+                    <div class="icon">📝</div>
+                    <span>Nota de texto</span>
+                </div>
+                <div class="mock-button">
+                    <div class="icon">🗑️</div>
+                    <span>Basurero</span>
+                </div>
+                <div class="mock-button">
+                    <div class="icon">➕</div>
+                    <span>Nuevo</span>
+                </div>
+            `;
         }
         
         function generateXML() {
@@ -117,9 +736,13 @@
         }
         
         function downloadLayout() {
-            const zip = new JSZip();
             const layoutName = document.getElementById("layoutName").value;
+            if (!layoutName) {
+                alert("Por favor, ingresa un nombre para el layout.");
+                return;
+            }
             
+            const zip = new JSZip();
             const layoutFolder = zip.folder(layoutName);
             const iconsFolder = layoutFolder.folder(layoutName + "_icons");
             
@@ -139,9 +762,19 @@
             });
         }
 
+        // Prevent data loss warning
         window.addEventListener("beforeunload", function (event) {
-            event.preventDefault();
-            event.returnValue = "Los datos se perderán si sales o refrescas la página.";
+            if (buttonList.length > 0) {
+                event.preventDefault();
+                event.returnValue = "Los datos se perderán si sales o refrescas la página.";
+            }
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('buttonModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
         });
     </script>
 </body>
