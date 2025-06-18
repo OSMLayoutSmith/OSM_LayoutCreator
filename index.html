@@ -1,103 +1,245 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>OSMTracker Layout Creator</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="script.js" defer></script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
+
 <body>
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <h2 class="logo">Layout Creator</h2>
+        <nav class="nav-menu" id="navMenu">
+            <a href="#" onclick="openConfigModal()">Upload/Download settings</a>
+
+            <a href="#">Documentation</a>
+            <a href="#">Contact</a>
+        </nav>
+        <button class="nav-toggle" onclick="toggleNavbar()">☰</button>
+    </header>
+
+    <!-- Main Container -->
     <div class="container">
+        <!-- Left Panel: Form -->
         <div class="main-panel">
             <h1>OSMTracker Layout Creator</h1>
-            
+
             <div class="form-group">
                 <label for="layoutName">Layout Name</label>
                 <input type="text" id="layoutName" placeholder="Enter layout name">
             </div>
-            
+
             <div class="form-group">
                 <label for="layoutName_2">Descriptive Layout Title</label>
                 <input type="text" id="layoutName_2" placeholder="Enter descriptive title">
             </div>
-            
+
             <div class="form-group">
                 <label for="layoutDescription">Description</label>
                 <input type="text" id="layoutDescription" placeholder="Enter description">
             </div>
-            
+
             <div class="form-group">
                 <label for="language">Language</label>
                 <select id="language">
                     <option value="">Choose a language</option>
                 </select>
             </div>
-            
+
             <div class="file-upload-section">
-                <label for="iconUploader" class="file-upload-label">
-                    📁 Choose Icon
-                </label>
+                <label for="iconUploader" class="file-upload-label">📁 Choose Icon</label>
                 <input type="file" id="iconUploader" accept="image/png">
+                <div id="iconPreview" style="margin-top: 12px;"></div>
+
                 <p style="color: #718096; font-size: 14px;">Select a PNG icon for your button</p>
             </div>
-            
+
             <button class="add-button" onclick="promptAddButton()" id="addButtonBtn" disabled>
                 + Add Button
             </button>
-            
+
             <div class="button-list" id="buttonList">
                 <p style="color: #718096; text-align: center; font-style: italic;">No buttons added yet</p>
             </div>
-            
+
             <button class="download-button" onclick="downloadLayout()">
                 📥 Download Layout
             </button>
         </div>
-        
+
+        <!-- Right Panel: Phone Mockup -->
         <div class="phone-mockup">
             <div class="phone-screen">
                 <div class="phone-header">
-                    <span>9:41</span>
+                    <span>8:00</span>
                     <div class="phone-status">
                         <span>●●●●</span>
                         <span>📶</span>
                         <span>🔋</span>
                     </div>
                 </div>
-                
-                <div class="app-header">Grabadora de trazas: #18</div>
-                <div class="app-subtitle">📍 238° Precisión 8m (18/21)</div>
-                
+
+                <div class="app-header">Track logger: #1</div>
+                <div class="app-subtitle">
+                    <span style="color: #00ff00;">238°</span>
+                    Accuracy 2m (18/21)
+                </div>
+
                 <div class="button-grid" id="mockButtonGrid">
                 </div>
 
                 <button class="reset-button" id="mockupBackButton" onclick="goBackMockup()" style="display: none;">
-                    🔄 Regresar
+                    Go back
                 </button>
             </div>
         </div>
+
     </div>
 
+    <!-- Modal -->
     <div class="modal" id="buttonModal">
         <div class="modal-content">
             <div class="form-group">
-                <label for="buttonNameInput">Nombre del botón</label>
-                <input type="text" id="buttonNameInput" placeholder="Árbol">
+                <label for="buttonNameInput">Button Name</label>
+                <input type="text" id="buttonNameInput" placeholder="Tree">
             </div>
+
             <div class="form-group">
-                <label for="buttonImageInput">Imagen</label>
-                <input type="text" id="buttonImageInput" placeholder="imagen del arbol" disabled>
+                <label for="buttonImageInput">Image</label>
+                <input type="text" id="buttonImageInput" placeholder="tree image" disabled>
             </div>
+
             <div class="modal-actions">
-                <button class="btn-modal btn-save" onclick="saveButton()">Guardar</button>
-                <button class="btn-modal btn-subfolder" onclick="handleSubfolder()">Subcarpeta</button>
-                <button class="btn-modal btn-delete" onclick="deleteButtonFromModal()">Eliminar</button>
-                <button class="btn-modal btn-cancel" onclick="closeModal()">Cancelar</button>
+                <button class="btn-modal btn-save" onclick="saveButton()">Save</button>
+                <button class="btn-modal btn-subfolder" onclick="handleSubfolder()">Subfolder</button>
+                <button class="btn-modal btn-delete" onclick="deleteButtonFromModal()">Delete</button>
+            </div>
+        </div>
+    </div>
+    <!-- Global Configuration Modal -->
+    <div class="modal" id="configModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 style="margin-bottom: 20px; text-align:center;">Global Configuration</h2>
+
+            <div class="form-group">
+                <label for="configMode">Mode</label>
+                <select id="configMode" onchange="toggleConfigMode()">
+                    <option value="download">Layout Download from Github</option>
+                    <option value="upload">Layout Upload to GitHub</option>
+                    <option value="zip">Upload from ZIP</option>
+                </select>
+            </div>
+
+            <!-- Download mode -->
+            <div id="downloadSettings">
+                <div class="form-group">
+                    <label for="layoutRepoName">Layout Name</label>
+                    <input type="text" id="layoutRepoName" placeholder="e.g., myLayout" />
+                </div>
+                <div class="form-group">
+                    <label for="repoName">Repository Name</label>
+                    <input type="text" id="repoName" placeholder="e.g., osmtracker-layouts" />
+                </div>
+                <div class="form-group">
+                    <label for="repoOwner">Repository Owner</label>
+                    <input type="text" id="repoOwner" placeholder="e.g., labexp" />
+                </div>
+                <div class="form-group">
+                    <label for="repoBranch">Branch</label>
+                    <input type="text" id="repoBranch" placeholder="e.g., master" />
+                </div>
+                <button class="add-button" id="processDownload" onclick="processDownloadLayout()">
+                    Download
+                </button>
+                <p style="font-size: 13px; margin-top: 10px; color: #4a5568;">
+                    Expected repository structure:
+                <pre style="background: #f7fafc; border-left: 4px solid #667eea; padding: 10px;">
+repo/
+├── layouts/
+│   └── myLayout/
+│       ├── myLayout_icons/
+│       │   ├── icon1.png
+│       │   └── ...
+│       ├── en.xml
+│       └── README.md
+└── metadata/
+    └── myLayout.xml
+                </pre>
+                </p>
+            </div>
+
+            <!-- Upload mode -->
+            <div id="uploadSettings" style="display:none;">
+                <div class="form-group">
+                    <label for="upstreamOwner">Upstream Owner</label>
+                    <input type="text" id="upstreamOwner" placeholder="e.g., Kevin-Salazar-itcr"
+                        value="Kevin-Salazar-itcr" />
+                </div>
+                <div class="form-group">
+                    <label for="upstreamRepo">Upstream Repo</label>
+                    <input type="text" id="upstreamRepo" placeholder="e.g., paginaRandom" value="paginaRandom" />
+                </div>
+                <div class="form-group">
+                    <label for="baseBranch">Base Branch</label>
+                    <input type="text" id="baseBranch" placeholder="e.g., main" value="main" />
+                </div>
+                <div class="form-group">
+                    <label for="forkRepo">Fork Repo</label>
+                    <input type="text" id="forkRepo" placeholder="e.g., paginaRandom" value="paginaRandom" />
+                </div>
+                <button class="add-button" id="processUpload" onclick="processUploadToGithub()">
+                    Upload to GitHub
+                </button>
+            </div>
+
+            <!-- Upload from ZIP -->
+            <div id="zipSettings" style="display:none;">
+                <div class="file-upload-section" id="zipDropArea">
+                    <label for="zipInput" class="file-upload-label">📦 Upload ZIP</label>
+                    <input type="file" id="zipInput" accept=".zip" />
+                    <p style="color: #718096; font-size: 14px;">Drag and drop a .zip file or click above</p>
+                    <p id="zipFileName" style="font-weight: bold; margin-top: 10px;"></p>
+                </div>
+                <button class="add-button" id="processZipBtn" onclick="processZipFile()" disabled>
+                    Process ZIP
+                </button>
+                <p style="font-size: 13px; color: #4a5568;">
+                    The ZIP file must contain:
+                <pre style="background: #f7fafc; border-left: 4px solid #667eea; padding: 10px;" translate="no">
+myLayout.zip
+├── myLayout/
+│   ├── myLayout_icons/
+│   │   ├── icon1.png
+│   │   └── ...
+│   ├── en.xml
+│   └── README.md
+└── metadata/
+    └── myLayout.xml
+        </pre>
+                </p>
+            </div>
+
+
+            <div class="modal-actions">
+                <button class="btn-modal btn-cancel" onclick="closeConfigModal()">Close</button>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="script.js"></script>
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 OSMTracker Layout Creator. All rights reserved.</p>
+    </footer>
+
+    <!-- Google Translate (hidden) -->
+    <div id="google_translate_element" style="display: none;"></div>
 </body>
+
 </html>

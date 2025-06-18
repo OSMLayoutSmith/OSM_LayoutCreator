@@ -1,47 +1,90 @@
-// --- NUEVA ESTRUCTURA DE DATOS Y VARIABLES GLOBALES ---
-const languages = {"es": "Español", "en": "English", "fr": "Français", "de": "Deutsch"};
+const languages = {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "ja": "日本語",
+    "pt": "Português",
+    "it": "Italiano",
+    "zh-CN": "中文 (简体)",
+    "zh-TW": "中文 (繁體)",
+    "ar": "العربية",
+    "ru": "Русский",
+    "ko": "한국어",
+    "hi": "हिन्दी",
+    "id": "Bahasa Indonesia",
+    "pl": "Polski",
+    "nl": "Nederlands",
+    "sv": "Svenska",
+    "th": "ภาษาไทย",
+    "iw": "עברית",
+    "vi": "Tiếng Việt",
+    "cs": "Čeština",
+    "uk": "Українська",
+    "ro": "Română",
+    "el": "Ελληνικά",
+    "tr": "Türkçe"
+};
 let layoutData = {
     name: 'root',
     buttons: []
 };
-let currentMockupPath = ['root']; // Rastrea en qué carpeta estamos en el mockup
-let currentEditingInfo = null; // Almacena información sobre el botón que se está editando
-let currentIconData = null; // Almacena los datos del ícono recién cargado
+let currentMockupPath = ['root']; 
+let currentEditingInfo = null; 
+let currentIconData = null; 
 
-// --- ELEMENTOS DEL DOM ---
 const languageSelect = document.getElementById("language");
 const iconUploader = document.getElementById("iconUploader");
 const addButtonBtn = document.getElementById("addButtonBtn");
 const mockupBackButton = document.getElementById("mockupBackButton");
 
-// --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
     Object.keys(languages).forEach(code => {
         let option = document.createElement("option");
         option.value = code;
         option.textContent = languages[code];
+        //add translate="no"
+        option.setAttribute("translate", "no");
+
         languageSelect.appendChild(option);
+
     });
 
-    iconUploader.addEventListener('change', function() {
+    iconUploader.addEventListener('change', function () {
+        const preview = document.getElementById('iconPreview');
         addButtonBtn.disabled = !this.files[0];
+        preview.innerHTML = '';
+
         if (this.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 currentIconData = e.target.result.split(',')[1];
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Icon preview';
+                img.style.width = '250px';
+                img.style.height = '250px';
+                img.style.borderRadius = '8px';
+                img.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+                preview.innerHTML = '';
+                preview.appendChild(img);
             };
             reader.readAsDataURL(this.files[0]);
         }
     });
 
-    document.getElementById('buttonModal').addEventListener('click', function(e) {
+
+    document.getElementById('buttonModal').addEventListener('click', function (e) {
         if (e.target === this) closeModal();
     });
-    
+    document.getElementById('configModal').addEventListener('click', function (e) {
+        if (e.target === this) closeConfigModal();
+    });
+
     window.addEventListener("beforeunload", function (event) {
         if (layoutData.buttons.length > 0) {
             event.preventDefault();
-            event.returnValue = "Los datos se perderán si sales o refrescas la página.";
+            event.returnValue = "Changes unsaved will be lost.";
         }
     });
 
@@ -50,8 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// --- FUNCIONES AUXILIARES ---
-// Encuentra la lista de botones en la que estamos actualmente, según el path
 function findCurrentList(path) {
     let currentLevel = layoutData;
     for (let i = 1; i < path.length; i++) {
@@ -60,19 +101,18 @@ function findCurrentList(path) {
         if (subfolderButton) {
             currentLevel = subfolderButton.subfolder;
         } else {
-            return null; // Path no válido
+            return null; 
         }
     }
     return currentLevel.buttons;
 }
 
-// --- LÓGICA DE BOTONES Y MODAL ---
 function promptAddButton() {
     if (!currentIconData) {
-        alert("Por favor, selecciona un icono primero desde 'Choose Icon'.");
+        alert("Please, first select an icon from 'Choose Icon'.");
         return;
     }
-    const buttonName = prompt("Ingresa el nombre del botón:", `Nuevo Botón`);
+    const buttonName = prompt("New button name:", `button1`);
     if (buttonName) {
         const currentList = findCurrentList(currentMockupPath);
         if (currentList) {
@@ -95,7 +135,7 @@ function editButton(path, index) {
     currentEditingInfo = { path, index };
     const list = findCurrentList(path);
     const button = list[index];
-    
+
     document.getElementById('buttonNameInput').value = button.label;
     document.getElementById('buttonImageInput').value = button.icon;
     showModal();
@@ -104,16 +144,16 @@ function editButton(path, index) {
 function saveButton() {
     if (!currentEditingInfo) return;
     const { path, index } = currentEditingInfo;
-    
+
     const newName = document.getElementById('buttonNameInput').value.trim();
     if (!newName) {
-        alert("Por favor, ingresa un nombre para el botón.");
+        alert("Please insert a name for the button.");
         return;
     }
 
     const list = findCurrentList(path);
     list[index].label = newName;
-    
+
     renderButtonList();
     updateMockup();
     closeModal();
@@ -126,19 +166,19 @@ function handleSubfolder() {
     const button = list[index];
 
     if (button.type === 'tag') {
-        if (confirm(`¿Convertir "${button.label}" en una subcarpeta? Esta acción no se puede deshacer.`)) {
+        if (confirm(`Convert "${button.label}" to a subfolder? You can´t undone this action.`)) {
             button.type = 'layout';
             button.subfolder = {
                 name: button.label.replace(/\s+/g, '_') + '_layout',
                 buttons: []
             };
-            alert(`"${button.label}" ahora es una subcarpeta.`);
+            alert(`"${button.label}" now is a subfolder.`);
             renderButtonList();
             updateMockup();
             closeModal();
         }
     } else {
-        alert(`"${button.label}" ya es una subcarpeta.`);
+        alert(`"${button.label}" is already a subfolder.`);
     }
 }
 
@@ -172,7 +212,6 @@ function closeModal() {
 }
 
 
-// --- LÓGICA DE RENDERIZADO Y UI ---
 function renderButtonList() {
     const listElement = document.getElementById("buttonList");
     listElement.innerHTML = "";
@@ -181,7 +220,7 @@ function renderButtonList() {
         listElement.innerHTML = '<p style="color: #718096; text-align: center; font-style: italic;">No buttons added yet</p>';
         return;
     }
-    
+
     // Función recursiva para renderizar la lista con anidación
     const renderLevel = (buttons, parentPath, level) => {
         buttons.forEach((btn, index) => {
@@ -189,7 +228,7 @@ function renderButtonList() {
             const div = document.createElement("div");
             div.className = "button-item";
             div.style.marginLeft = `${level * 20}px`;
-            
+
             let iconHtml = `<img src="data:image/png;base64,${btn.data}" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">`;
             if (btn.type === 'layout') {
                 iconHtml = '📁 '; // Icono de carpeta
@@ -209,31 +248,63 @@ function renderButtonList() {
             }
         });
     };
-    
+
     renderLevel(layoutData.buttons, ['root'], 0);
 }
 
 function updateMockup() {
     const grid = document.getElementById('mockButtonGrid');
     grid.innerHTML = '';
-    
+
+    const fixedButtons = [
+        { icon: '🔴', label: 'Voice record' },
+        { icon: '📷', label: 'Take photo' },
+        { icon: '📝', label: 'Text note' },
+        { icon: '🔴', label: 'Voice record' },
+        { icon: '📷', label: 'Take photo' },
+        { icon: '📝', label: 'Text note' },
+        { icon: '🔴', label: 'Voice record' },
+        { icon: '📷', label: 'Take photo' },
+        { icon: '📝', label: 'Text note' },
+        { icon: '🔴', label: 'Voice record' },
+        { icon: '📷', label: 'Take photo' },
+        { icon: '📝', label: 'Text note' },
+        { icon: '🔴', label: 'Voice record' },
+        { icon: '📷', label: 'Take photo' }
+    ];
+
+    fixedButtons.forEach(fixed => {
+        const btn = document.createElement('div');
+        btn.className = 'mock-button fixed-button';
+
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'icon';
+        iconDiv.textContent = fixed.icon;
+
+        const label = document.createElement('span');
+        label.textContent = fixed.label;
+
+        btn.appendChild(iconDiv);
+        btn.appendChild(label);
+        grid.appendChild(btn);
+    });
+
     const currentList = findCurrentList(currentMockupPath);
     if (!currentList) return;
 
-    // Lógica del botón de Regresar
     mockupBackButton.style.display = currentMockupPath.length > 1 ? 'block' : 'none';
 
     currentList.forEach((btn, index) => {
         const button = document.createElement('div');
         button.className = 'mock-button has-custom-icon';
-        
+
         const iconDiv = document.createElement('div');
         iconDiv.className = 'icon';
         iconDiv.style.backgroundImage = `url(data:image/png;base64,${btn.data})`;
-        
+
         const label = document.createElement('span');
         label.textContent = btn.label;
-        
+
         button.appendChild(iconDiv);
         button.appendChild(label);
         grid.appendChild(button);
@@ -249,6 +320,7 @@ function updateMockup() {
     });
 }
 
+
 function goBackMockup() {
     if (currentMockupPath.length > 1) {
         currentMockupPath.pop();
@@ -256,11 +328,9 @@ function goBackMockup() {
     }
 }
 
-
-// --- LÓGICA DE DESCARGA ---
 function generateXML() {
     let layoutsXml = '';
-    
+
     // Función recursiva para generar los layouts anidados
     function buildLayoutXml(layout) {
         let xml = `  <layout name="${layout.name}">\n`;
@@ -278,14 +348,14 @@ function generateXML() {
             xml += `    </row>\n`;
         }
         xml += `  </layout>\n`;
-        
+
         // Recursivamente añadir los layouts de las subcarpetas
         layout.buttons.forEach(btn => {
             if (btn.type === 'layout') {
                 xml += buildLayoutXml(btn.subfolder);
             }
         });
-        
+
         return xml;
     }
 
@@ -312,15 +382,15 @@ function downloadLayout() {
         alert("Por favor, ingresa un nombre para el layout.");
         return;
     }
-    
+
     const zip = new JSZip();
     const layoutFolder = zip.folder(layoutName);
     const iconsFolder = layoutFolder.folder(layoutName + "_icons");
-    
+
     layoutFolder.file(`${document.getElementById("language").value || 'en'}.xml`, generateXML());
     zip.folder("metadata").file(`${layoutName}.xml`, generateMetadata());
     layoutFolder.file("README.md", generateReadme());
-    
+
     // Función recursiva para añadir todos los iconos de todas las carpetas
     function addIcons(buttons) {
         buttons.forEach(btn => {
@@ -331,11 +401,110 @@ function downloadLayout() {
         });
     }
     addIcons(layoutData.buttons);
-    
+
     zip.generateAsync({ type: "blob" }).then(content => {
         const link = document.createElement("a");
         link.href = URL.createObjectURL(content);
         link.download = `${layoutName}.zip`;
         link.click();
     });
+}
+
+function toggleNavbar() {
+    const menu = document.getElementById("navMenu");
+    menu.classList.toggle("active");
+}
+
+// Language auto-translation logic for Google Translate
+const sourceLang = 'en'; // Page default language
+const browserLang = navigator.language ? navigator.language.slice(0, 2) : 'en';
+
+const targetLang = (browserLang !== sourceLang ? browserLang : null);
+
+if (targetLang) {
+    document.cookie = `googtrans=/${sourceLang}/${targetLang}; path=/;`;
+}
+
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+        pageLanguage: sourceLang,
+        includedLanguages: 'en,es,fr,de,ja,pt,it,zh-CN,zh-TW,ar,ru,ko,hi,id,pl,nl,sv,th,iw,vi,cs,uk,ro,el,tr',
+        autoDisplay: false
+    }, 'google_translate_element');
+}
+
+function openConfigModal() {
+    document.getElementById("configModal").classList.add("show");
+}
+
+function closeConfigModal() {
+    document.getElementById("configModal").classList.remove("show");
+}
+
+function toggleConfigMode() {
+    const mode = document.getElementById("configMode").value;
+    document.getElementById("downloadSettings").style.display = mode === "download" ? "block" : "none";
+    document.getElementById("uploadSettings").style.display = mode === "upload" ? "block" : "none";
+    document.getElementById("zipSettings").style.display = mode === "zip" ? "block" : "none";
+}
+
+const zipDropArea = document.getElementById('zipDropArea');
+const zipInput = document.getElementById('zipInput');
+const zipFileName = document.getElementById('zipFileName');
+
+// Eventos drag & drop
+['dragenter', 'dragover'].forEach(event => {
+    zipDropArea.addEventListener(event, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        zipDropArea.classList.add('dragover');
+    });
+});
+
+['dragleave', 'drop'].forEach(event => {
+    zipDropArea.addEventListener(event, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        zipDropArea.classList.remove('dragover');
+    });
+});
+
+zipInput.addEventListener('change', e => {
+    if (zipInput.files[0]) {
+        zipFileName.textContent = zipInput.files[0].name;
+        document.getElementById('processZipBtn').disabled = false;
+    } else {
+        zipFileName.textContent = '';
+        document.getElementById('processZipBtn').disabled = true;
+    }
+});
+
+zipDropArea.addEventListener('drop', e => {
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.zip')) {
+        zipInput.files = e.dataTransfer.files;
+        zipFileName.textContent = file.name;
+        document.getElementById('processZipBtn').disabled = false;
+    } else {
+        alert("Only .zip files are allowed.");
+        document.getElementById('processZipBtn').disabled = true;
+    }
+});
+
+function processZipFile() {
+    const file = zipInput.files[0];
+    if (!file) {
+        alert("Please upload a .zip file first.");
+        return;
+    }
+
+    alert(`Processing: ${file.name}`);
+}
+
+function processDownloadLayout(){
+    alert("Download process initiated.");
+}
+
+function processUploadToGithub(){
+    alert("Upload process initiated.");
 }
