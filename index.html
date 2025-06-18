@@ -4,145 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OSMTracker Layout Creator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>OSMTracker Layout Creator</h1>
-    
-    <label>Nombre del Layout: <input type="text" id="layoutName"></label><br>
-    <label>Nombre Descriptivo: <input type="text" id="layoutName_2"></label><br>
-    <label>Descripción: <input type="text" id="layoutDescription"></label><br>
-    <label>Idioma: 
-        <select id="language">
-        </select>
-    </label><br>
-    
-    <input type="file" id="iconUploader" accept="image/png">
-    <button onclick="addButton()">Agregar Botón</button>
-    <br>
-    
-    <ul id="buttonList"></ul>
-    
-    <button onclick="downloadLayout()">Descargar Layout</button>
-    
-    <script>
-        const languages = {"es": "Español", "en": "English", "fr": "Français", "de": "Deutsch"};
-        const languageSelect = document.getElementById("language");
-        Object.keys(languages).forEach(code => {
-            let option = document.createElement("option");
-            option.value = code;
-            option.textContent = languages[code];
-            languageSelect.appendChild(option);
-        });
-        
-        let buttonList = [];
-        let iconCounter = 1;
-        
-        function addButton() {
-            const fileInput = document.getElementById("iconUploader");
-            if (!fileInput.files[0]) {
-                alert("Por favor, selecciona un icono.");
-                return;
-            }
-            const label = prompt("Nombre del botón:");
-            if (!label) return;
+    <div class="container">
+        <div class="main-panel">
+            <h1>OSMTracker Layout Creator</h1>
             
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                buttonList.push({
-                    label,
-                    icon: `icon_${iconCounter}.png`,
-                    data: event.target.result.split(',')[1] 
-                });
-                iconCounter++;
-                renderButtons();
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-        }
+            <div class="form-group">
+                <label for="layoutName">Layout Name</label>
+                <input type="text" id="layoutName" placeholder="Enter layout name">
+            </div>
+            
+            <div class="form-group">
+                <label for="layoutName_2">Descriptive Layout Title</label>
+                <input type="text" id="layoutName_2" placeholder="Enter descriptive title">
+            </div>
+            
+            <div class="form-group">
+                <label for="layoutDescription">Description</label>
+                <input type="text" id="layoutDescription" placeholder="Enter description">
+            </div>
+            
+            <div class="form-group">
+                <label for="language">Language</label>
+                <select id="language">
+                    <option value="">Choose a language</option>
+                </select>
+            </div>
+            
+            <div class="file-upload-section">
+                <label for="iconUploader" class="file-upload-label">
+                    📁 Choose Icon
+                </label>
+                <input type="file" id="iconUploader" accept="image/png">
+                <p style="color: #718096; font-size: 14px;">Select a PNG icon for your button</p>
+            </div>
+            
+            <button class="add-button" onclick="promptAddButton()" id="addButtonBtn" disabled>
+                + Add Button
+            </button>
+            
+            <div class="button-list" id="buttonList">
+                <p style="color: #718096; text-align: center; font-style: italic;">No buttons added yet</p>
+            </div>
+            
+            <button class="download-button" onclick="downloadLayout()">
+                📥 Download Layout
+            </button>
+        </div>
         
-        function renderButtons() {
-            const list = document.getElementById("buttonList");
-            list.innerHTML = "";
-            buttonList.forEach((btn, index) => {
-                const li = document.createElement("li");
-                li.textContent = `${btn.label} (${btn.icon})`;
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                <div class="phone-header">
+                    <span>9:41</span>
+                    <div class="phone-status">
+                        <span>●●●●</span>
+                        <span>📶</span>
+                        <span>🔋</span>
+                    </div>
+                </div>
                 
-                const editButton = document.createElement("button");
-                editButton.textContent = "Editar";
-                editButton.onclick = () => {
-                    const newLabel = prompt("Nuevo nombre para el botón:", btn.label);
-                    if (newLabel) {
-                        buttonList[index].label = newLabel;
-                        renderButtons();
-                    }
-                };
+                <div class="app-header">Grabadora de trazas: #18</div>
+                <div class="app-subtitle">📍 238° Precisión 8m (18/21)</div>
                 
-                const delButton = document.createElement("button");
-                delButton.textContent = "Eliminar";
-                delButton.onclick = () => {
-                    buttonList.splice(index, 1);
-                    renderButtons();
-                };
-                
-                li.appendChild(editButton);
-                li.appendChild(delButton);
-                list.appendChild(li);
-            });
-        }
-        
-        function generateXML() {
-            let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<layouts>\n  <layout name="root">\n`;
-            for (let i = 0; i < buttonList.length; i += 3) {
-                xml += `    <row>\n`;
-                for (let j = i; j < i + 3 && j < buttonList.length; j++) {
-                    xml += `        <button type="tag" label="${buttonList[j].label}" icon="${buttonList[j].icon}" />\n`;
-                }
-                xml += `    </row>\n`;
-            }
-            xml += `  </layout>\n</layouts>`;
-            return xml;
-        }
-        
-        function generateMetadata() {
-            const lang = document.getElementById("language").value;
-            const desc = document.getElementById("layoutDescription").value;
-            return `<?xml version="1.0" encoding="UTF-8"?>\n<metadata>\n  <option iso="${lang}" name="${languages[lang]}">${desc}</option>\n  <github username="labexp" repo="osmtracker-android-layouts" branch="master" />\n</metadata>`;
-        }
-        
-        function generateReadme() {
-            const layoutName = document.getElementById("layoutName").value;
-            const layoutName2 = document.getElementById("layoutName_2").value;
-            const desc = document.getElementById("layoutDescription").value;
-            return `# ${layoutName2}\n\n${desc}`;
-        }
-        
-        function downloadLayout() {
-            const zip = new JSZip();
-            const layoutName = document.getElementById("layoutName").value;
-            
-            const layoutFolder = zip.folder(layoutName);
-            const iconsFolder = layoutFolder.folder(layoutName + "_icons");
-            
-            layoutFolder.file(`${document.getElementById("language").value}.xml`, generateXML());
-            zip.folder("metadata").file(`${layoutName}.xml`, generateMetadata());
-            layoutFolder.file("README.md", generateReadme());
-            
-            buttonList.forEach(btn => {
-                iconsFolder.file(btn.icon, btn.data, { base64: true });
-            });
-            
-            zip.generateAsync({ type: "blob" }).then(content => {
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(content);
-                link.download = `${layoutName}.zip`;
-                link.click();
-            });
-        }
+                <div class="button-grid" id="mockButtonGrid">
+                </div>
 
-        window.addEventListener("beforeunload", function (event) {
-            event.preventDefault();
-            event.returnValue = "Los datos se perderán si sales o refrescas la página.";
-        });
-    </script>
+                <button class="reset-button" id="mockupBackButton" onclick="goBackMockup()" style="display: none;">
+                    🔄 Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="buttonModal">
+        <div class="modal-content">
+            <div class="form-group">
+                <label for="buttonNameInput">Nombre del botón</label>
+                <input type="text" id="buttonNameInput" placeholder="Árbol">
+            </div>
+            <div class="form-group">
+                <label for="buttonImageInput">Imagen</label>
+                <input type="text" id="buttonImageInput" placeholder="imagen del arbol" disabled>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal btn-save" onclick="saveButton()">Guardar</button>
+                <button class="btn-modal btn-subfolder" onclick="handleSubfolder()">Subcarpeta</button>
+                <button class="btn-modal btn-delete" onclick="deleteButtonFromModal()">Eliminar</button>
+                <button class="btn-modal btn-cancel" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
