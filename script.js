@@ -118,21 +118,24 @@ function promptAddButton() {
   }
 
   showPrompt("New button name", "e.g. button1", function (buttonName) {
-    if (buttonName) {
-      const currentList = findCurrentList(currentMockupPath);
-      if (currentList) {
-        currentList.push({
-          type: "tag",
-          label: buttonName,
-          icon: iconUploader.files[0].name,
-          data: currentIconData,
-        });
-        renderButtonList();
-        updateMockup();
-        iconUploader.value = "";
-        addButtonBtn.disabled = true;
-        currentIconData = null;
-      }
+
+    const currentList = findCurrentList(currentMockupPath);
+    if (currentList) {
+      currentList.push({
+        type: "tag",
+        label: buttonName.trim(),
+        icon: iconUploader.files[0].name,
+        data: currentIconData,
+      });
+
+      renderButtonList();
+      updateMockup();
+
+      // Limpiar
+      iconUploader.value = "";
+      document.getElementById("iconPreview").innerHTML = "";
+      addButtonBtn.disabled = true;
+      currentIconData = null;
     }
   });
 }
@@ -549,18 +552,19 @@ function showPrompt(title = "Enter Value", placeholder = "", callback) {
   const input = document.getElementById("promptInput");
   input.placeholder = placeholder;
   input.value = "";
-  promptCallback = callback;
+
+  window.promptCallback = callback; 
+
   document.getElementById("promptModal").classList.add("show");
   input.focus();
-}
 
 function confirmPrompt() {
-  const value = document.getElementById("promptInput").value;
+  const value = document.getElementById("promptInput").value.trim();
+  window.promptCallback(value);
   closePromptModal();
-  if (promptCallback) promptCallback(value);
 }
 
 function closePromptModal() {
   document.getElementById("promptModal").classList.remove("show");
-  promptCallback = null;
+  window.promptCallback = null;
 }
