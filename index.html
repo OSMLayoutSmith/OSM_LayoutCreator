@@ -12,6 +12,29 @@
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
 
+<div class="modal" id="alertModal">
+  <div class="modal-content" style="max-width: 400px;">
+    <h2 id="alertTitle"></h2>
+    <p id="alertMessage" style="margin: 20px 0;"></p>
+    <div class="modal-actions">
+      <button class="btn-modal btn-save" onclick="closeAlertModal()">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="promptModal">
+  <div class="modal-content" style="max-width: 400px;">
+    <h2 id="promptTitle">Enter Value</h2>
+    <div class="form-group">
+      <input type="text" id="promptInput" placeholder="Type something..." />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal btn-save" onclick="confirmPrompt()">OK</button>
+      <button class="btn-modal btn-cancel" onclick="closePromptModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <body>
     <!-- Header / Navbar -->
     <header class="navbar">
