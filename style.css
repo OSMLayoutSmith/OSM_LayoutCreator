@@ -375,6 +375,7 @@ h1 {
     z-index: 1000;
     justify-content: center;
     align-items: center;
+    overflow-y: auto;
 }
 
 .modal.show {

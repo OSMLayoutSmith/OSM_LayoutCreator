@@ -4,44 +4,43 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>OSMTracker Layout Creator</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="script.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script> 
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
 
-<div class="modal" id="alertModal">
-  <div class="modal-content" style="max-width: 400px;">
-    <h2 id="alertTitle"></h2>
-    <p id="alertMessage" style="margin: 20px 0;"></p>
-    <div class="modal-actions">
-      <button class="btn-modal btn-save" onclick="closeAlertModal()">OK</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="promptModal">
-  <div class="modal-content" style="max-width: 400px;">
-    <h2 id="promptTitle">Enter Value</h2>
-    <div class="form-group">
-      <input type="text" id="promptInput" placeholder="Type something..." />
-    </div>
-    <div class="modal-actions">
-      <button class="btn-modal btn-save" onclick="confirmPrompt()">OK</button>
-      <button class="btn-modal btn-cancel" onclick="closePromptModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-
 <body>
+    <!-- Modal: Alert -->
+    <div class="modal" id="alertModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 id="alertTitle"></h2>
+            <p id="alertMessage" style="margin: 20px 0;"></p>
+            <div class="modal-actions">
+                <button class="btn-modal btn-save" onclick="closeAlertModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Prompt -->
+    <div class="modal" id="promptModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 id="promptTitle">Enter Value</h2>
+            <div class="form-group">
+                <input type="text" id="promptInput" placeholder="Type something..." />
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal btn-save" onclick="confirmPrompt()">OK</button>
+                <button class="btn-modal btn-cancel" onclick="closePromptModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Header / Navbar -->
     <header class="navbar">
         <h2 class="logo">Layout Creator</h2>
         <nav class="nav-menu" id="navMenu">
             <a href="#" onclick="openConfigModal()">Upload/Download settings</a>
-
             <a href="#">Documentation</a>
             <a href="#">Contact</a>
         </nav>
@@ -50,95 +49,59 @@
 
     <!-- Main Container -->
     <div class="container">
-        <!-- Left Panel: Form -->
+        <!-- Left Panel -->
         <div class="main-panel">
             <h1>OSMTracker Layout Creator</h1>
 
-            <div class="form-group">
-                <label for="layoutName">Layout Name</label>
-                <input type="text" id="layoutName" placeholder="Enter layout name">
-            </div>
+            <!-- Layout Info -->
+            <div class="form-group"><label for="layoutName">Layout Name</label><input type="text" id="layoutName"></div>
+            <div class="form-group"><label for="layoutName_2">Descriptive Layout Title</label><input type="text"
+                    id="layoutName_2"></div>
+            <div class="form-group"><label for="layoutDescription">Description</label><input type="text"
+                    id="layoutDescription"></div>
+            <div class="form-group"><label for="language">Language</label><select id="language">
+                    <option value="">Choose a language (default: English)</option>
+                </select></div>
 
-            <div class="form-group">
-                <label for="layoutName_2">Descriptive Layout Title</label>
-                <input type="text" id="layoutName_2" placeholder="Enter descriptive title">
-            </div>
-
-            <div class="form-group">
-                <label for="layoutDescription">Description</label>
-                <input type="text" id="layoutDescription" placeholder="Enter description">
-            </div>
-
-            <div class="form-group">
-                <label for="language">Language</label>
-                <select id="language">
-                    <option value="">Choose a language</option>
-                </select>
-            </div>
-
+            <!-- Icon Upload -->
             <div class="file-upload-section">
                 <label for="iconUploader" class="file-upload-label">📁 Choose Icon</label>
                 <input type="file" id="iconUploader" accept="image/png">
                 <div id="iconPreview" style="margin-top: 12px;"></div>
-
                 <p style="color: #718096; font-size: 14px;">Select a PNG icon for your button</p>
             </div>
 
-            <button class="add-button" onclick="promptAddButton()" id="addButtonBtn" disabled>
-                + Add Button
-            </button>
-
+            <!-- Button Controls -->
+            <button class="add-button" onclick="promptAddButton()" id="addButtonBtn" disabled>+ Add Button</button>
             <div class="button-list" id="buttonList">
                 <p style="color: #718096; text-align: center; font-style: italic;">No buttons added yet</p>
             </div>
-
-            <button class="download-button" onclick="downloadLayout()">
-                📥 Download Layout
-            </button>
+            <button class="download-button" onclick="downloadLayout()">📥 Download Layout</button>
         </div>
 
-        <!-- Right Panel: Phone Mockup -->
+        <!-- Phone Mockup -->
         <div class="phone-mockup">
             <div class="phone-screen">
                 <div class="phone-header">
                     <span>8:00</span>
-                    <div class="phone-status">
-                        <span>●●●●</span>
-                        <span>📶</span>
-                        <span>🔋</span>
-                    </div>
+                    <div class="phone-status"><span>●●●●</span><span>📶</span><span>🔋</span></div>
                 </div>
-
                 <div class="app-header">Track logger: #1</div>
-                <div class="app-subtitle">
-                    <span style="color: #00ff00;">238°</span>
-                    Accuracy 2m (18/21)
-                </div>
-
-                <div class="button-grid" id="mockButtonGrid">
-                </div>
-
-                <button class="reset-button" id="mockupBackButton" onclick="goBackMockup()" style="display: none;">
-                    Go back
-                </button>
+                <div class="app-subtitle"><span style="color: #00ff00;">238°</span> Accuracy 2m (18/21)</div>
+                <div class="button-grid" id="mockButtonGrid"></div>
+                <button class="reset-button" id="mockupBackButton" onclick="goBackMockup()" style="display: none;">Go
+                    back</button>
             </div>
         </div>
-
     </div>
 
-    <!-- Modal -->
+    <!-- Button Modal -->
     <div class="modal" id="buttonModal">
         <div class="modal-content">
-            <div class="form-group">
-                <label for="buttonNameInput">Button Name</label>
-                <input type="text" id="buttonNameInput" placeholder="Tree">
-            </div>
-
-            <div class="form-group">
-                <label for="buttonImageInput">Image</label>
-                <input type="text" id="buttonImageInput" placeholder="tree image" disabled>
-            </div>
-
+            <div class="form-group"><label for="buttonNameInput">Button Name</label><input type="text"
+                    id="buttonNameInput"></div>
+            <div class="form-group"><label for="buttonImageInput">Image</label><input type="text" id="buttonImageInput"
+                    disabled></div>
             <div class="modal-actions">
                 <button class="btn-modal btn-save" onclick="saveButton()">Save</button>
                 <button class="btn-modal btn-subfolder" onclick="handleSubfolder()">Subfolder</button>
@@ -146,13 +109,13 @@
             </div>
         </div>
     </div>
-    <!-- Global Configuration Modal -->
+
+    <!-- Config Modal -->
     <div class="modal" id="configModal">
         <div class="modal-content" style="max-width: 600px;">
             <h2 style="margin-bottom: 20px; text-align:center;">Global Configuration</h2>
 
-            <div class="form-group">
-                <label for="configMode">Mode</label>
+            <div class="form-group"><label for="configMode">Mode</label>
                 <select id="configMode" onchange="toggleConfigMode()">
                     <option value="download">Layout Download from Github</option>
                     <option value="upload">Layout Upload to GitHub</option>
@@ -160,27 +123,16 @@
                 </select>
             </div>
 
-            <!-- Download mode -->
+            <!-- Download Settings -->
             <div id="downloadSettings">
-                <div class="form-group">
-                    <label for="layoutRepoName">Layout Name</label>
-                    <input type="text" id="layoutRepoName" placeholder="e.g., myLayout" />
+                <div class="form-group"><label for="layoutRepoName">Layout Name</label><input type="text"
+                        id="layoutRepoName"></div>
+                <div class="form-group"><label for="repoName">Repository Name</label><input type="text" id="repoName">
                 </div>
-                <div class="form-group">
-                    <label for="repoName">Repository Name</label>
-                    <input type="text" id="repoName" placeholder="e.g., osmtracker-layouts" />
-                </div>
-                <div class="form-group">
-                    <label for="repoOwner">Repository Owner</label>
-                    <input type="text" id="repoOwner" placeholder="e.g., labexp" />
-                </div>
-                <div class="form-group">
-                    <label for="repoBranch">Branch</label>
-                    <input type="text" id="repoBranch" placeholder="e.g., master" />
-                </div>
-                <button class="add-button" id="processDownload" onclick="processDownloadLayout()">
-                    Download
-                </button>
+                <div class="form-group"><label for="repoOwner">Repository Owner</label><input type="text"
+                        id="repoOwner"></div>
+                <div class="form-group"><label for="repoBranch">Branch</label><input type="text" id="repoBranch"></div>
+                <button class="add-button" id="processDownload" onclick="processDownloadLayout()">Download</button>
                 <p style="font-size: 13px; margin-top: 10px; color: #4a5568;">
                     Expected repository structure:
                 <pre style="background: #f7fafc; border-left: 4px solid #667eea; padding: 10px;">
@@ -189,50 +141,37 @@ repo/
 │   └── myLayout/
 │       ├── myLayout_icons/
 │       │   ├── icon1.png
-│       │   └── ...
 │       ├── en.xml
 │       └── README.md
 └── metadata/
     └── myLayout.xml
-                </pre>
+          </pre>
                 </p>
             </div>
 
-            <!-- Upload mode -->
+            <!-- Upload Settings -->
             <div id="uploadSettings" style="display:none;">
-                <div class="form-group">
-                    <label for="upstreamOwner">Upstream Owner</label>
-                    <input type="text" id="upstreamOwner" placeholder="e.g., Kevin-Salazar-itcr"
-                        value="Kevin-Salazar-itcr" />
-                </div>
-                <div class="form-group">
-                    <label for="upstreamRepo">Upstream Repo</label>
-                    <input type="text" id="upstreamRepo" placeholder="e.g., paginaRandom" value="paginaRandom" />
-                </div>
-                <div class="form-group">
-                    <label for="baseBranch">Base Branch</label>
-                    <input type="text" id="baseBranch" placeholder="e.g., main" value="main" />
-                </div>
-                <div class="form-group">
-                    <label for="forkRepo">Fork Repo</label>
-                    <input type="text" id="forkRepo" placeholder="e.g., paginaRandom" value="paginaRandom" />
-                </div>
-                <button class="add-button" id="processUpload" onclick="processUploadToGithub()">
-                    Upload to GitHub
-                </button>
+                <div class="form-group"><label for="upstreamOwner">Upstream Owner</label><input type="text"
+                        id="upstreamOwner" value="Kevin-Salazar-itcr"></div>
+                <div class="form-group"><label for="upstreamRepo">Upstream Repo</label><input type="text"
+                        id="upstreamRepo" value="paginaRandom"></div>
+                <div class="form-group"><label for="baseBranch">Base Branch</label><input type="text" id="baseBranch"
+                        value="main"></div>
+                <div class="form-group"><label for="forkRepo">Fork Repo</label><input type="text" id="forkRepo"
+                        value="paginaRandom"></div>
+                <button class="add-button" id="processUpload" onclick="processUploadToGithub()">Upload to
+                    GitHub</button>
             </div>
 
-            <!-- Upload from ZIP -->
+            <!-- ZIP Upload -->
             <div id="zipSettings" style="display:none;">
                 <div class="file-upload-section" id="zipDropArea">
                     <label for="zipInput" class="file-upload-label">📦 Upload ZIP</label>
-                    <input type="file" id="zipInput" accept=".zip" />
+                    <input type="file" id="zipInput" accept=".zip">
                     <p style="color: #718096; font-size: 14px;">Drag and drop a .zip file or click above</p>
                     <p id="zipFileName" style="font-weight: bold; margin-top: 10px;"></p>
                 </div>
-                <button class="add-button" id="processZipBtn" onclick="processZipFile()" disabled>
-                    Process ZIP
-                </button>
+                <button class="add-button" id="processZipBtn" onclick="processZipFile()" disabled>Process ZIP</button>
                 <p style="font-size: 13px; color: #4a5568;">
                     The ZIP file must contain:
                 <pre style="background: #f7fafc; border-left: 4px solid #667eea; padding: 10px;" translate="no">
@@ -240,15 +179,13 @@ myLayout.zip
 ├── myLayout/
 │   ├── myLayout_icons/
 │   │   ├── icon1.png
-│   │   └── ...
 │   ├── en.xml
 │   └── README.md
 └── metadata/
     └── myLayout.xml
-        </pre>
+          </pre>
                 </p>
             </div>
-
 
             <div class="modal-actions">
                 <button class="btn-modal btn-cancel" onclick="closeConfigModal()">Close</button>
@@ -263,6 +200,18 @@ myLayout.zip
 
     <!-- Google Translate (hidden) -->
     <div id="google_translate_element" style="display: none;"></div>
+
+    <script src="scripts/constants.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/modals.js"></script>
+    <script src="scripts/button-manager.js"></script>
+    <script src="scripts/render.js"></script>
+    <script src="scripts/generators.js"></script>
+    <script src="scripts/download.js"></script>
+    <script src="scripts/config.js"></script>
+    <script src="scripts/zip-handler.js"></script>
+    <script src="scripts/translate.js"></script>
+    <script src="scripts/init.js"></script>
 </body>
 
 </html>
