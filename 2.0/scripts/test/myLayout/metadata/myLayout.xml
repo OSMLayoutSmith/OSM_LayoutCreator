@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<metadata layout="myLayout">
-   <option iso="en" name="English">Description in English</option>
-   <option iso="es" name="Español">Description in Español</option>
-   <option iso="ru" name="Русский">Description in Русский</option>
-   <option iso="zh" name="中文">Description in 中文</option>
-   <option iso="ja" name="日本語">Description in 日本語</option>
-   <github username="OSMBot" repo="osmtracker-android-layouts" branch="master" />
-</metadata>

@@ -46,8 +46,9 @@
 
             // Parsear metadata.xml
             const metadataStr = await zip.file(metadataEntry).async("string");
-            const metadataObj = this._parseMetadata(metadataStr);
-            const languages = metadataObj.languages;
+            const metadataResult = this._parseMetadata(metadataStr, layoutName);
+            const languages = metadataResult.languages;
+            const metadataObj = metadataResult.metadata;
 
             // Crear XMLFile y registrar idiomas
             const xmlFile = new XMLFile();
@@ -60,13 +61,20 @@
                 readmeContent = await zip.file(readmePath).async("string");
             }
 
-            // Cargar íconos
+            // Cargar íconos - buscar tanto mayúsculas como minúsculas
             const icons = {};
-            const iconFolderPrefix = `${layoutName}/${layoutName}_icons/`;
+            const iconFolderPrefixes = [
+                `${layoutName}/${layoutName}_icons/`,
+                `${layoutName}/${layoutName}_Icons/`  // También con mayúscula
+            ];
+            
             for (const fileName of Object.keys(zip.files)) {
-                if (fileName.startsWith(iconFolderPrefix) && !zip.files[fileName].dir) {
-                    const shortName = fileName.replace(iconFolderPrefix, "");
-                    icons[shortName] = await zip.file(fileName).async("base64");
+                for (const prefix of iconFolderPrefixes) {
+                    if (fileName.startsWith(prefix) && !zip.files[fileName].dir) {
+                        const shortName = fileName.replace(prefix, "");
+                        icons[shortName] = await zip.file(fileName).async("base64");
+                        break; // Solo procesar una vez por archivo
+                    }
                 }
             }
 
@@ -83,19 +91,25 @@
             return {
                 name: layoutName,
                 xmlFile,
-                metadata: metadataObj.metadata,
+                metadata: metadataObj,
                 readme: readmeContent,
                 icons
             };
         }
 
-        _parseMetadata(xmlStr) {
-            const languages = [...xmlStr.matchAll(/<option[^>]*\s+iso="([^"]+)"/gi)]
-                .map(m => m[1]);
-            const metadata = new Metadata();
+        _parseMetadata(xmlStr, layoutName) {
+            // Extraer idiomas disponibles - regex que maneja espacios alrededor del =
+            const languages = [];
+            const optionMatches = xmlStr.matchAll(/<option[^>]*iso\s*=\s*"([^"]+)"[^>]*>/gi);
+            for (const match of optionMatches) {
+                languages.push(match[1]);
+            }
+            
+            // Crear objeto Metadata con el nombre del layout
+            const metadata = new Metadata(layoutName);
 
-            // Extraer opciones completas
-            const optionRegex = /<option[^>]*\s+iso="([^"]+)"\s+name="([^"]+)">([^<]*)<\/option>/gi;
+            // Extraer opciones completas - también con espacios flexibles
+            const optionRegex = /<option[^>]*iso\s*=\s*"([^"]+)"[^>]*name\s*=\s*"([^"]+)"[^>]*>([^<]*)<\/option>/gi;
             let opt;
             while ((opt = optionRegex.exec(xmlStr)) !== null) {
                 metadata.addOption(opt[1], opt[2], opt[3].trim());
@@ -125,16 +139,17 @@
                     xmlFile.addLayout(layout);
                 }
 
-                // Nuevo regex que no depende del orden de atributos
+                // Regex mejorado para botones con mejor manejo de atributos
                 const buttonRegex = /<button\b([^>]*)\/>/gi;
                 let btnMatch;
                 while ((btnMatch = buttonRegex.exec(match[2])) !== null) {
                     const attrs = btnMatch[1];
 
-                    const type = /type="([^"]+)"/i.exec(attrs)?.[1] || "";
-                    const label = /label="([^"]*)"/i.exec(attrs)?.[1] || "";
-                    const iconPath = /icon="([^"]+)"/i.exec(attrs)?.[1] || "";
-                    const targetLayout = /targetlayout="([^"]+)"/i.exec(attrs)?.[1] || "#";
+                    // Extraer atributos con regex más robustos
+                    const type = this._extractAttribute(attrs, 'type') || "";
+                    const label = this._extractAttribute(attrs, 'label') || "";
+                    const iconPath = this._extractAttribute(attrs, 'icon') || "";
+                    const targetLayout = this._extractAttribute(attrs, 'targetlayout') || "#";
 
                     const iconFile = iconPath.split("/").pop();
 
@@ -146,16 +161,35 @@
                         button.data = btnData;
                         layout.addButton(button);
                     }
+                    
+                    // Siempre añadir la etiqueta para este idioma
                     button.addLabel(lang, label);
                 }
             }
         }
 
+        // Método auxiliar para extraer atributos de manera más robusta (con espacios flexibles)
+        _extractAttribute(attrString, attrName) {
+            const regex = new RegExp(`${attrName}\\s*=\\s*"([^"]*)"`, 'i');
+            const match = regex.exec(attrString);
+            return match ? match[1] : null;
+        }
+
         async _loadIconBase64(zip, layoutName, iconFile) {
-            const iconZipPath = `${layoutName}/${layoutName}_icons/${iconFile}`;
-            if (zip.file(iconZipPath)) {
-                return await zip.file(iconZipPath).async("base64");
+            if (!iconFile) return null;
+            
+            // Buscar en ambas variantes de carpeta de íconos
+            const iconPaths = [
+                `${layoutName}/${layoutName}_icons/${iconFile}`,
+                `${layoutName}/${layoutName}_Icons/${iconFile}`
+            ];
+            
+            for (const iconZipPath of iconPaths) {
+                if (zip.file(iconZipPath)) {
+                    return await zip.file(iconZipPath).async("base64");
+                }
             }
+            
             return null;
         }
     }
