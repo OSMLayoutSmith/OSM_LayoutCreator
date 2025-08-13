@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OSMTracker Layout Creator</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
 
@@ -54,14 +54,27 @@
             <h1>OSMTracker Layout Creator</h1>
 
             <!-- Layout Info -->
-            <div class="form-group"><label for="layoutName">Layout Name</label><input type="text" id="layoutName"></div>
-            <div class="form-group"><label for="layoutName_2">Descriptive Layout Title</label><input type="text"
-                    id="layoutName_2"></div>
-            <div class="form-group"><label for="layoutDescription">Description</label><input type="text"
-                    id="layoutDescription"></div>
-            <div class="form-group"><label for="language">Language</label><select id="language">
+            <div class="form-group">
+                <label for="layoutName">Layout Name</label>
+                <input type="text" id="layoutName">
+            </div>
+            <div class="form-group">
+                <label for="layoutName_2">Descriptive Layout Title</label>
+                <input type="text" id="layoutName_2">
+            </div>
+            <div class="form-group">
+                <label for="layoutDescription">Description</label>
+                <input type="text" id="layoutDescription">
+            </div>
+
+            <!-- Language + Grid -->
+            <div class="form-group">
+                <label for="language">Language</label>
+                <select id="language">
                     <option value="">Choose a language (default: English)</option>
-                </select></div>
+                </select>
+                <div id="languageButtonsGrid" class="lang-grid"></div>
+            </div>
 
             <!-- Icon Upload -->
             <div class="file-upload-section">
@@ -98,10 +111,20 @@
     <!-- Button Modal -->
     <div class="modal" id="buttonModal">
         <div class="modal-content">
-            <div class="form-group"><label for="buttonNameInput">Button Name</label><input type="text"
-                    id="buttonNameInput"></div>
-            <div class="form-group"><label for="buttonImageInput">Image</label><input type="text" id="buttonImageInput"
-                    disabled></div>
+            <div class="form-group">
+                <label for="buttonNameInput">Button Name</label>
+                <input type="text" id="buttonNameInput">
+            </div>
+            <div class="form-group">
+                <label for="buttonImageInput">Image</label>
+                <input type="text" id="buttonImageInput" disabled>
+            </div>
+            <div class="form-group">
+                <label for="buttonLanguageSelect">Language (optional)</label>
+                <select id="buttonLanguageSelect">
+                    <option value="">Select language for this button</option>
+                </select>
+            </div>
             <div class="modal-actions">
                 <button class="btn-modal btn-save" onclick="saveButton()">Save</button>
                 <button class="btn-modal btn-subfolder" onclick="handleSubfolder()">Subfolder</button>

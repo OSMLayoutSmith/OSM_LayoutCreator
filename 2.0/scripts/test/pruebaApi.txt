@@ -1,0 +1,4 @@
+curl -X POST "https://osmbackend-production.up.railway.app/api/download" \
+  -H "Content-Type: application/json" \
+  -d '{"mode":"si","name":"Hydranten","repo":"osmtracker-android-layouts","owner":"Kevin-Salazar-itcr","branch":"prueba"}' \
+  --output Hydranten.zip
