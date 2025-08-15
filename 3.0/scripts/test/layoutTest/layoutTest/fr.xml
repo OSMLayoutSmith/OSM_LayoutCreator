@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layouts>
+  <layout name="root">
+      <button type="tag" label="Un" icon="layoutTest_icons/icon1.png"/>
+      <button type="tag" label="Deux" icon="layoutTest_icons/icon2.png"/>
+  </layout>
+</layouts>

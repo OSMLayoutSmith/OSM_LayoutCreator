@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata layout="layoutTest">
+   <option iso="en" name="English">Description in English</option>
+   <option iso="es" name="Español">Description in Español</option>
+   <option iso="fr" name="Français">Description in Français</option>
+   <option iso="de" name="Deutsch">Description in Deutsch</option>
+   <github username="UserBot" repo="osmtracker-layouts" branch="master" />
+</metadata>

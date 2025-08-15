@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layouts>
+  <layout name="root">
+    <row>
+      <button type="page" label="Gebaeude" icon="Hydranten_icons/building.png" targetlayout="Gebaeude"/>
+      <button type="page" label="Unterflur Hydrant Strasse" icon="Hydranten_icons/underground_lane.png" targetlayout="Unterflur_Hydrant_Strasse"/>
+      <button type="page" label="Unterflur Hydrant Fussweg" icon="Hydranten_icons/underground_sidewalk.png" targetlayout="Unterflur_Hydrant_Fussweg"/>
+    </row>
+    <row>
+      <button type="page" label="Unterflur Hydrant Parkplatz" icon="Hydranten_icons/underground_parking_lot.png" targetlayout="Unterflur_Hydrant_Parkplatz"/>
+      <button type="page" label="Unterflur Hydrant Gruen" icon="Hydranten_icons/underground_green.png" targetlayout="Unterflur_Hydrant_Gruen"/>
+      <button type="page" label="Oberflur Hydrant" icon="Hydranten_icons/pillar.png" targetlayout="Oberflur_Hydrant"/>
+    </row>
+    <row>
+      <button type="page" label="Saugstelle" icon="Hydranten_icons/pond.png" targetlayout="Saugstelle"/>
+      <button type="page" label="weitere-H" icon="Hydranten_icons/wall.png" targetlayout="weitere_H"/>
+    </row>
+  </layout>
+  <layout name="Gebaeude">
+    <row>
+      <button type="tag" label="Feuerwache" icon="Hydranten_icons/firestation.png"/>
+      <button type="tag" label="Rettungswache" icon="Hydranten_icons/ambulancestation.png"/>
+      <button type="tag" label="Polizeiwache" icon="Hydranten_icons/police.png"/>
+    </row>
+  </layout>
+  <layout name="Unterflur_Hydrant_Strasse">
+    <row>
+      <button type="tag" label="H50; underground; lane" icon="Hydranten_icons/underground_lane_50.png"/>
+      <button type="tag" label="H63; underground; lane" icon="Hydranten_icons/underground_lane_63.png"/>
+      <button type="tag" label="H80; underground; lane" icon="Hydranten_icons/underground_lane_80.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H100; underground; lane" icon="Hydranten_icons/underground_lane_100.png"/>
+      <button type="tag" label="H110; underground; lane" icon="Hydranten_icons/underground_lane_110.png"/>
+      <button type="tag" label="H120; underground; lane" icon="Hydranten_icons/underground_lane_120.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H150; underground; lane" icon="Hydranten_icons/underground_lane_150.png"/>
+      <button type="tag" label="H200; underground; lane" icon="Hydranten_icons/underground_lane_200.png"/>
+      <button type="tag" label="H250; underground; lane" icon="Hydranten_icons/underground_lane_250.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H300; underground; lane" icon="Hydranten_icons/underground_lane_300.png"/>
+      <button type="tag" label="H350; underground; lane" icon="Hydranten_icons/underground_lane_350.png"/>
+      <button type="tag" label="H400; underground; lane" icon="Hydranten_icons/underground_lane_400.png"/>
+    </row>
+  </layout>
+  <layout name="Unterflur_Hydrant_Fussweg">
+    <row>
+      <button type="tag" label="H50; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_50.png"/>
+      <button type="tag" label="H63; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_63.png"/>
+      <button type="tag" label="H80; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_80.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H100; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_100.png"/>
+      <button type="tag" label="H110; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_110.png"/>
+      <button type="tag" label="H120; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_120.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H150; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_150.png"/>
+      <button type="tag" label="H200; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_200.png"/>
+      <button type="tag" label="H250; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_250.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H300; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_300.png"/>
+      <button type="tag" label="H350; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_350.png"/>
+      <button type="tag" label="H400; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk_400.png"/>
+    </row>
+  </layout>
+  <layout name="Unterflur_Hydrant_Parkplatz">
+    <row>
+      <button type="tag" label="H50; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_50.png"/>
+      <button type="tag" label="H63; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_63.png"/>
+      <button type="tag" label="H80; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_80.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H100; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_100.png"/>
+      <button type="tag" label="H110; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_110.png"/>
+      <button type="tag" label="H120; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_120.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H150; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_150.png"/>
+      <button type="tag" label="H200; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_200.png"/>
+      <button type="tag" label="H250; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_250.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H300; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_300.png"/>
+      <button type="tag" label="H350; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_350.png"/>
+      <button type="tag" label="H400; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot_400.png"/>
+    </row>
+  </layout>
+  <layout name="Unterflur_Hydrant_Gruen">
+    <row>
+      <button type="tag" label="H50; underground; green" icon="Hydranten_icons/underground_green_50.png"/>
+      <button type="tag" label="H63; underground; green" icon="Hydranten_icons/underground_green_63.png"/>
+      <button type="tag" label="H80; underground; green" icon="Hydranten_icons/underground_green_80.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H100; underground; green" icon="Hydranten_icons/underground_green_100.png"/>
+      <button type="tag" label="H110; underground; green" icon="Hydranten_icons/underground_green_110.png"/>
+      <button type="tag" label="H120; underground; green" icon="Hydranten_icons/underground_green_120.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H150; underground; green" icon="Hydranten_icons/underground_green_150.png"/>
+      <button type="tag" label="H200; underground; green" icon="Hydranten_icons/underground_green_200.png"/>
+      <button type="tag" label="H250; underground; green" icon="Hydranten_icons/underground_green_250.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H300; underground; green" icon="Hydranten_icons/underground_green_300.png"/>
+      <button type="tag" label="H350; underground; green" icon="Hydranten_icons/underground_green_350.png"/>
+      <button type="tag" label="H400; underground; green" icon="Hydranten_icons/underground_green_400.png"/>
+    </row>
+  </layout>
+  <layout name="Oberflur_Hydrant">
+    <row>
+      <button type="tag" label="H100; pillar" icon="Hydranten_icons/pillar.png"/>
+      <button type="tag" label="H150; pillar" icon="Hydranten_icons/pillar.png"/>
+      <button type="tag" label="H200; pillar" icon="Hydranten_icons/pillar.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H100; pillar; green" icon="Hydranten_icons/pillar.png"/>
+      <button type="tag" label="H150; pillar; green" icon="Hydranten_icons/pillar.png"/>
+      <button type="tag" label="H200; pillar; green" icon="Hydranten_icons/pillar.png"/>
+    </row>
+  </layout>
+  <layout name="Saugstelle">
+    <row>
+      <button type="tag" label="Offenes Gewaesser" icon="Hydranten_icons/pond.png"/>
+      <button type="tag" label="Offenes Gewaesser nur TS" icon="Hydranten_icons/pond.png"/>
+      <button type="tag" label="Loesch- wasser- behaelter" icon="Hydranten_icons/water_tank.png"/>
+    </row>
+  </layout>
+  <layout name="weitere_H">
+    
+    <row>
+      <button type="tag" label="Wandhydrant" icon="Hydranten_icons/wall.png"/>
+      <button type="tag" label="Einspeisung" icon="Hydranten_icons/wall.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H? pillar" icon="Hydranten_icons/pillar.png"/>
+      <button type="tag" label="H?; underground; lane" icon="Hydranten_icons/underground_lane.png"/>
+    </row>
+    <row>
+      <button type="tag" label="H?; underground; sidewalk" icon="Hydranten_icons/underground_sidewalk.png"/>
+      <button type="tag" label="H?; underground; parking_lot" icon="Hydranten_icons/underground_parking_lot.png"/>
+      <button type="tag" label="H?; underground; green" icon="Hydranten_icons/underground_green.png"/>
+    </row>
+  </layout>
+</layouts>
