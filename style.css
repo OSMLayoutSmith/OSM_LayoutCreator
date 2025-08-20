@@ -258,6 +258,24 @@ h1 {
     transition: all 0.3s ease;
     background: white;
 }
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+    min-height: 120px;  
+    resize: vertical;   
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
 
 .form-group input:focus,
 .form-group select:focus {

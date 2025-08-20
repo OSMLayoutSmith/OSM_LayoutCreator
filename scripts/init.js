@@ -1,107 +1,217 @@
+// Load core modules
+const script = document.createElement('script');
+script.src = 'scripts/core/button.js';
+document.head.appendChild(script);
+
+const script2 = document.createElement('script');
+script2.src = 'scripts/core/layout.js';
+document.head.appendChild(script2);
+
+const script3 = document.createElement('script');
+script3.src = 'scripts/core/xml-file.js';
+document.head.appendChild(script3);
+
+const script4 = document.createElement('script');
+script4.src = 'scripts/core/metadata.js';
+document.head.appendChild(script4);
+
+const script5 = document.createElement('script');
+script5.src = 'scripts/core/folder-manager.js';
+document.head.appendChild(script5);
+
+const script6 = document.createElement('script');
+script6.src = 'scripts/core/zip-builder.js';
+document.head.appendChild(script6);
+
+const script7 = document.createElement('script');
+script7.src = 'scripts/core/zip-loader.js';
+document.head.appendChild(script7);
+
+// Global instance of FolderManager
+let folderManager = null;
+let currentLayoutName = null;
+
 const languageSelect = document.getElementById("language");
 const iconUploader = document.getElementById("iconUploader");
 const addButtonBtn = document.getElementById("addButtonBtn");
 
+// Initialize folder manager
+function initializeFolderManager() {
+  folderManager = new FolderManager();
+  window.folderManager = folderManager; // 🔹 aquí sí se guarda la instancia real
+
+  const defaultLayoutName = "default_layout";
+  currentLayoutName = defaultLayoutName;
+
+  folderManager.createLayout(defaultLayoutName);
+  const activeLayout = folderManager.getActiveLayout();
+
+  const rootLayout = new Layout("root");
+  activeLayout.xmlFile.addLayout(rootLayout);
+  activeLayout.xmlFile.addLanguage("en");
+
+  activeLayout.metadata = new Metadata(defaultLayoutName, "OSMBot", "osmtracker-android-layouts", "master");
+  activeLayout.metadata.addOption("en", "English", "Default English layout");
+
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
-  Object.keys(languages).forEach((code) => {
-    let option = document.createElement("option");
-    option.value = code;
-    option.textContent = languages[code];
-    //no translatable by the translate api
-    option.setAttribute("translate", "no");
+  // Wait for core scripts to load
+  setTimeout(() => {
+    initializeFolderManager();
 
-    languageSelect.appendChild(option);
-  });
-
-  iconUploader.addEventListener("change", function () {
-    const preview = document.getElementById("iconPreview");
-    addButtonBtn.disabled = !this.files[0];
-    preview.innerHTML = "";
-
-    if (this.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        currentIconData = e.target.result.split(",")[1];
-        const img = document.createElement("img");
-        img.src = e.target.result;
-        img.alt = "Icon preview";
-        img.style.width = "250px";
-        img.style.height = "250px";
-        img.style.borderRadius = "8px";
-        img.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
-        preview.innerHTML = "";
-        preview.appendChild(img);
-      };
-      reader.readAsDataURL(this.files[0]);
-    }
-  });
-
-  document
-    .getElementById("buttonModal")
-    .addEventListener("click", function (e) {
-      if (e.target === this) closeModal();
-    });
-  document
-    .getElementById("configModal")
-    .addEventListener("click", function (e) {
-      if (e.target === this) closeModal();
+    // Populate language dropdown
+    Object.keys(languages).forEach((code) => {
+      let option = document.createElement("option");
+      option.value = code;
+      option.textContent = languages[code];
+      option.setAttribute("translate", "no");
+      languageSelect.appendChild(option);
     });
 
-  window.addEventListener("beforeunload", function (event) {
-    if (layoutData.buttons.length > 0) {
-      event.preventDefault();
-      event.returnValue = "Changes unsaved will be lost.";
-    }
-  });
+    iconUploader.addEventListener("change", function () {
+      const preview = document.getElementById("iconPreview");
+      addButtonBtn.disabled = !this.files[0];
+      preview.innerHTML = "";
 
-  updateMockup();
-  renderButtonList();
+      if (this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          currentIconData = e.target.result.split(",")[1];
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.alt = "Icon preview";
+          img.style.width = "250px";
+          img.style.height = "250px";
+          img.style.borderRadius = "8px";
+          img.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
+          preview.innerHTML = "";
+          preview.appendChild(img);
+        };
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+
+    // Modal event listeners
+    document
+      .getElementById("buttonModal")
+      .addEventListener("click", function (e) {
+        if (e.target === this) closeModal();
+      });
+    document
+      .getElementById("configModal")
+      .addEventListener("click", function (e) {
+        if (e.target === this) closeModal();
+      });
+
+    // Prevent data loss
+    window.addEventListener("beforeunload", function (event) {
+      const activeLayout = folderManager?.getActiveLayout();
+      if (activeLayout && Object.keys(activeLayout.xmlFile.layouts).length > 0) {
+        event.preventDefault();
+        event.returnValue = "Changes unsaved will be lost.";
+      }
+    });
+
+    updateMockup();
+    renderButtonList();
+  }, 500); // Wait for core scripts to load
 });
 
-/* === FIXED: Language grid support === */
+// Helper functions to work with the core system
+function getCurrentLayout() {
+  const activeLayout = folderManager.getActiveLayout();
+  if (!activeLayout) return null;
+  return activeLayout.xmlFile.layouts["root"];
+}
+
+function findLayoutByName(layoutName) {
+  const activeLayout = folderManager.getActiveLayout();
+  if (!activeLayout) return null;
+  return activeLayout.xmlFile.layouts[layoutName];
+}
+
+function addLanguageToSystem(langCode) {
+  const activeLayout = folderManager.getActiveLayout();
+  if (activeLayout) {
+    activeLayout.xmlFile.addLanguage(langCode);
+
+    // Add to metadata if not exists
+    const existingOptions = activeLayout.metadata.options.map(opt => opt[0]);
+    if (!existingOptions.includes(langCode)) {
+      const langName = languages[langCode] || langCode.toUpperCase();
+      activeLayout.metadata.addOption(langCode, langName, `${langName} layout`);
+    }
+  }
+}
+
+function setLayoutREADME(readme) {
+  const activeLayout = folderManager.getActiveLayout();
+  if (activeLayout && readme) {
+    activeLayout.readme = readme;
+  }
+}
+
+function setLayoutDownloadDescription(description) {
+  const activeLayout = folderManager.getActiveLayout();
+  if (activeLayout && description) {
+    activeLayout.metadata.options.forEach(option => {
+      option[2] = description;
+    });
+  }
+}
+
+// Expose global functions
+window.folderManager = folderManager;
+window.getCurrentLayout = getCurrentLayout;
+window.findLayoutByName = findLayoutByName;
+window.addLanguageToSystem = addLanguageToSystem;
+window.setLayoutDownloadDescription = setLayoutDownloadDescription;
+window.setLayoutREADME = setLayoutREADME;
+
+/* === Language grid support === */
 (() => {
-  // Array para mantener los idiomas seleccionados
-  let selectedLanguages = ['en']; // Inglés por defecto
+  let selectedLanguages = ['en'];
 
   const languageSelect = document.getElementById("language");
   const buttonsGrid = document.getElementById("languageButtonsGrid");
 
   if (!languageSelect || !buttonsGrid) return;
 
-  // Función para obtener las iniciales del código de idioma
   const getInitials = (code) => {
     if (!code) return "EN";
     return code.toUpperCase().slice(0, 2);
   };
 
-  // Función para renderizar el grid de idiomas seleccionados
   function renderLanguageGrid() {
     buttonsGrid.innerHTML = "";
 
     if (selectedLanguages.length === 0) {
-      // Si no hay idiomas, mostrar solo inglés por defecto
       selectedLanguages = ['en'];
     }
 
-    // Crear filas de máximo 3 columnas
+    // Update the core system with selected languages
+    if (folderManager) {
+      selectedLanguages.forEach(lang => addLanguageToSystem(lang));
+    }
+
     for (let i = 0; i < selectedLanguages.length; i += 3) {
       const row = document.createElement("div");
       row.className = "lang-row";
 
-      // Agregar hasta 3 botones por fila
       for (let j = i; j < Math.min(i + 3, selectedLanguages.length); j++) {
         const code = selectedLanguages[j];
         const btn = document.createElement("button");
         btn.className = "lang-btn";
         btn.textContent = getInitials(code);
         btn.dataset.code = code;
-        
-        // Si es inglés y es el único idioma, deshabilitarlo
+
         if (code === 'en' && selectedLanguages.length === 1) {
           btn.disabled = true;
-          btn.classList.add('center'); // Estilo especial para el botón deshabilitado
+          btn.classList.add('center');
         }
-        
+
         row.appendChild(btn);
       }
 
@@ -109,53 +219,55 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Función para agregar un idioma a la selección
   function addLanguage(code) {
     if (!code || selectedLanguages.includes(code)) {
-      return; // No agregar si ya existe o es vacío
+      return;
     }
-    
-    if (selectedLanguages.length < 9) { // Máximo 9 idiomas (3x3)
+
+    if (selectedLanguages.length < 9) {
       selectedLanguages.push(code);
+      addLanguageToSystem(code);
       renderLanguageGrid();
     }
   }
 
-  // Función para remover un idioma de la selección
   function removeLanguage(code) {
     if (code === 'en' && selectedLanguages.length === 1) {
-      return; // No permitir eliminar inglés si es el único
+      return;
     }
 
     selectedLanguages = selectedLanguages.filter(lang => lang !== code);
-    
+
     if (selectedLanguages.length === 0) {
-      selectedLanguages = ['en']; // Asegurar que siempre haya al menos inglés
+      selectedLanguages = ['en'];
     }
-    
+
+    // Remove from core system
+    const activeLayout = folderManager?.getActiveLayout();
+    if (activeLayout) {
+      activeLayout.xmlFile.removeLanguage(code);
+      activeLayout.metadata.removeOption(code);
+    }
+
     renderLanguageGrid();
   }
 
-  // Event listener para cuando se selecciona un idioma del dropdown
   languageSelect.addEventListener("change", (e) => {
     const selectedCode = e.target.value;
     if (selectedCode) {
       addLanguage(selectedCode);
-      // Resetear el select al valor por defecto
       e.target.value = "";
     }
   });
 
-  // Event listener para el selector del buttonModal
   document.addEventListener("DOMContentLoaded", () => {
     const buttonModalSelect = document.getElementById("buttonLanguageSelect");
     const buttonNameInput = document.getElementById("buttonNameInput");
-    
+
     if (buttonModalSelect && buttonNameInput) {
       buttonModalSelect.addEventListener("change", (e) => {
         const selectedLang = e.target.value;
         if (window.currentEditingButton && selectedLang) {
-          // Guardar el valor actual antes de cambiar
           const currentLang = buttonModalSelect.dataset.currentLang;
           if (currentLang && buttonNameInput.value.trim()) {
             if (!window.currentEditingButton.labels) {
@@ -163,15 +275,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             window.currentEditingButton.labels[currentLang] = buttonNameInput.value.trim();
           }
-          
-          // Cargar el nuevo valor
+
           const newValue = window.currentEditingButton.labels?.[selectedLang] || window.currentEditingButton.label || "";
           buttonNameInput.value = newValue;
           buttonModalSelect.dataset.currentLang = selectedLang;
         }
       });
 
-      // Guardar cuando se escribe en el input
       buttonNameInput.addEventListener("input", (e) => {
         const currentLang = buttonModalSelect.dataset.currentLang;
         if (window.currentEditingButton && currentLang) {
@@ -184,7 +294,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Event listener para clicks en los botones del grid
   buttonsGrid.addEventListener("click", (e) => {
     if (e.target.classList.contains("lang-btn") && !e.target.disabled) {
       const code = e.target.dataset.code;
@@ -194,26 +303,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Renderizar el grid inicial al cargar la página
   document.addEventListener("DOMContentLoaded", () => {
-    renderLanguageGrid();
+    setTimeout(() => {
+      renderLanguageGrid();
+    }, 600);
   });
 
-  // Función para actualizar el selector del buttonModal
   function updateButtonModalLanguageSelect() {
     const buttonModalSelect = document.getElementById("buttonLanguageSelect");
     if (!buttonModalSelect) return;
 
-    // Limpiar opciones existentes
     buttonModalSelect.innerHTML = "";
 
-    // Agregar opción por defecto
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
     defaultOption.textContent = "Select language for this button";
     buttonModalSelect.appendChild(defaultOption);
 
-    // Agregar los idiomas seleccionados
     selectedLanguages.forEach(code => {
       const option = document.createElement("option");
       option.value = code;
@@ -223,14 +329,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Modificar renderLanguageGrid para actualizar también el modal
   const originalRenderLanguageGrid = renderLanguageGrid;
-  renderLanguageGrid = function() {
+  renderLanguageGrid = function () {
     originalRenderLanguageGrid();
     updateButtonModalLanguageSelect();
   };
 
-  // Exponer funciones globalmente si es necesario
   window.getSelectedLanguages = () => selectedLanguages;
   window.setSelectedLanguages = (languages) => {
     selectedLanguages = languages.length > 0 ? languages : ['en'];
@@ -238,3 +342,4 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   window.updateButtonModalLanguageSelect = updateButtonModalLanguageSelect;
 })();
+

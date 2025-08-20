@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Core System Scripts -->
+    <script src="./scripts/core/button.js"></script>
+    <script src="./scripts/core/layout.js"></script>
+    <script src="./scripts/core/xml-file.js"></script>
+    <script src="./scripts/core/metadata.js"></script>
+    <script src="./scripts/core/folder-manager.js"></script>
+    <script src="./scripts/core/zip-builder.js"></script>
+    <script src="./scripts/core/zip-loader.js"></script>
 </head>
 
 <body>
@@ -56,15 +65,19 @@
             <!-- Layout Info -->
             <div class="form-group">
                 <label for="layoutName">Layout Name</label>
-                <input type="text" id="layoutName">
+                <input type="text" id="layoutName" placeholder="default_layout">
             </div>
             <div class="form-group">
-                <label for="layoutName_2">Descriptive Layout Title</label>
-                <input type="text" id="layoutName_2">
+                <label for="layoutDesc">Download description</label>
+                <input type="text" id="layoutDesc" onchange="setLayoutDownloadDescription(this.value)" placeholder="Text here will appear when downloading the layout">
             </div>
             <div class="form-group">
-                <label for="layoutDescription">Description</label>
-                <input type="text" id="layoutDescription">
+                <label for="layoutREADME">README text (for GitHub)</label>
+                <textarea id="layoutREADME" onchange="setLayoutREADME(this.value)"
+                    placeholder=
+"# this is a title 
+## this is a subtitle
+here a text sample"></textarea>
             </div>
 
             <!-- Language + Grid -->
@@ -89,7 +102,7 @@
             <div class="button-list" id="buttonList">
                 <p style="color: #718096; text-align: center; font-style: italic;">No buttons added yet</p>
             </div>
-            <button class="download-button" onclick="downloadLayout()">📥 Download Layout</button>
+            <button class="download-button" onclick="downloadLayout()">📥 Download Layout as .ZIP</button>
         </div>
 
         <!-- Phone Mockup -->
@@ -102,8 +115,7 @@
                 <div class="app-header">Track logger: #1</div>
                 <div class="app-subtitle"><span style="color: #00ff00;">238°</span> Accuracy 2m (18/21)</div>
                 <div class="button-grid" id="mockButtonGrid"></div>
-                <button class="reset-button" id="mockupBackButton" onclick="goBackMockup()" style="display: none;">Go
-                    back</button>
+                <button class="reset-button" id="mockupBackButton" onclick="goBackMockup()" style="display: none;">Go back</button>
             </div>
         </div>
     </div>
@@ -224,17 +236,19 @@ myLayout.zip
     <!-- Google Translate (hidden) -->
     <div id="google_translate_element" style="display: none;"></div>
 
-    <script src="scripts/constants.js"></script>
-    <script src="scripts/utils.js"></script>
-    <script src="scripts/modals.js"></script>
-    <script src="scripts/button-manager.js"></script>
-    <script src="scripts/render.js"></script>
-    <script src="scripts/generators.js"></script>
-    <script src="scripts/download.js"></script>
-    <script src="scripts/config.js"></script>
-    <script src="scripts/zip-handler.js"></script>
-    <script src="scripts/translate.js"></script>
-    <script src="scripts/init.js"></script>
+    <!-- Frontend Scripts -->
+    <script src="./scripts/constants.js"></script>
+    <script src="./scripts/utils.js"></script>
+    <script src="./scripts/modals.js"></script>
+    <script src="./scripts/button-manager.js"></script>
+    <script src="./scripts/render.js"></script>
+    <script src="./scripts/generator.js"></script>
+    <script src="./scripts/download.js"></script>
+    <script src="./scripts/config.js"></script>
+    <script src="./scripts/zip-handler.js"></script>
+    <script src="./scripts/translate.js"></script>
+    <script src="./scripts/manager.js"></script>
+    <script src="./scripts/init.js"></script>
 </body>
 
 </html>

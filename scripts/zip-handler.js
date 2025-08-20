@@ -41,6 +41,69 @@ zipDropArea.addEventListener("drop", (e) => {
 });
 
 function processZipFile() {
+    const file = zipInput.files[0];
+    if (!file) {
+        showAlert("Please upload a .zip file first.");
+        return;
+    }
+
+    // Leer el archivo como ArrayBuffer
+    const reader = new FileReader();
+    reader.onload = async function (e) {
+        try {
+            const buffer = e.target.result;
+            
+            // Usar la instancia global de FolderManager que ya inicializa init.js
+            const layoutName = await window.folderManager.importFromZipBuffer(buffer);
+
+            // Actualizar la vista con el layout importado
+            layoutData = folderManager.getLayout(layoutName).xmlFile; // o como uses layoutData
+            currentMockupPath = ["root"];
+            currentIconData = null;
+
+            renderButtonList();
+            updateMockup();
+            showAlert(`Layout "${layoutName}" loaded successfully from ZIP.`);
+            //imprimir tostring del folderManager en consola
+            console.log(window.folderManager.toString());
+        } catch (err) {
+            console.error("Error processing zip file:", err);
+            showAlert("Error processing zip file: " + err.message, "Error");
+        }
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
+
+function updateUIFromLoadedLayout(layoutData) {
+  // Update form fields
+  if (layoutData.metadata) {
+    document.getElementById("layoutName").value = layoutData.metadata.layoutName || layoutData.name;
+    
+    // Set description from first option
+    if (layoutData.metadata.options.length > 0) {
+      document.getElementById("layoutREADME").value = layoutData.metadata.options[0][2] || "";
+    }
+    
+    // Update languages
+    const languages = layoutData.metadata.options.map(opt => opt[0]);
+    if (languages.length > 0 && window.setSelectedLanguages) {
+      window.setSelectedLanguages(languages);
+    }
+  }
+  
+  // Parse title from README if available
+  if (layoutData.readme) {
+    const titleMatch = layoutData.readme.match(/^#\s*(.+)$/m);
+    if (titleMatch) {
+      document.getElementById("layoutDesc").value = titleMatch[1].trim();
+    }
+  }
+}
+
+// Legacy function for backward compatibility with server upload
+function processZipFileLegacy() {
   const file = zipInput.files[0];
   if (!file) {
     showAlert("Please upload a .zip file first.");
@@ -63,7 +126,9 @@ function processZipFile() {
   })
   .then(data => {
     if (data.success) {
-      layoutData = data.layoutData;
+      // Convert legacy data to core system
+      convertLegacyDataToCoreSystem(data.layoutData);
+      
       currentMockupPath = ["root"];
       currentIconData = null;
       renderButtonList();
@@ -77,4 +142,10 @@ function processZipFile() {
     console.error("Error processing zip file:", error);
     showAlert("Error processing zip file: " + error.message, "Error");
   });
+}
+
+function convertLegacyDataToCoreSystem(legacyData) {
+  // This function converts the old layoutData structure to the new core system
+  // Implementation depends on the legacy structure
+  console.warn("Legacy data conversion not implemented. Please use the new ZIP processing.");
 }

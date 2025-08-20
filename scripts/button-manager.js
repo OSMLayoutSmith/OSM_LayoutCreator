@@ -8,50 +8,101 @@ function promptAddButton() {
   }
 
   showPrompt("New button name", "e.g. button1", function (buttonName) {
-
-    const currentList = findCurrentList(currentMockupPath);
-    if (currentList) {
-      currentList.push({
-        type: "tag",
-        label: buttonName.trim(),
-        icon: iconUploader.files[0].name,
-        data: currentIconData,
-      });
-
-      renderButtonList();
-      updateMockup();
-
-      // Limpiar
-      iconUploader.value = "";
-      document.getElementById("iconPreview").innerHTML = "";
-      addButtonBtn.disabled = true;
-      currentIconData = null;
+    const trimmedName = buttonName.trim();
+    if (!trimmedName) {
+      showAlert("Please enter a valid button name.");
+      return;
     }
+
+    // Get current layout from core system
+    const currentLayoutName = getCurrentMockupLayoutName();
+    const layout = findLayoutByName(currentLayoutName);
+    
+    if (!layout) {
+      showAlert("Error: Current layout not found.");
+      return;
+    }
+
+    // Create button using core Button class
+    const iconFileName = iconUploader.files[0].name;
+    const activeLayout = folderManager.getActiveLayout();
+    const layoutName = activeLayout.metadata.layoutName || currentLayoutName;
+    
+    const button = new Button(
+      layoutName,           // folder
+      currentLayoutName,    // origin layout
+      "tag",               // type
+      {},                  // labels (will be populated)
+      iconFileName,        // icon
+      "#"                  // targetLayout
+    );
+
+    // Add labels for all selected languages
+    const selectedLanguages = window.getSelectedLanguages ? window.getSelectedLanguages() : ['en'];
+    selectedLanguages.forEach(lang => {
+      button.addLabel(lang, trimmedName);
+    });
+
+    // Store icon data for download
+    button.data = currentIconData;
+    
+    // Add icon to layout icons collection
+    activeLayout.icons[iconFileName] = currentIconData;
+    
+    // Add button to layout
+    layout.addButton(button);
+
+    renderButtonList();
+    updateMockup();
+
+    // Clear icon selection
+    iconUploader.value = "";
+    document.getElementById("iconPreview").innerHTML = "";
+    addButtonBtn.disabled = true;
+    currentIconData = null;
   });
 }
 
-function editButton(path, index) {
-  currentEditingInfo = { path, index };
-  const list = findCurrentList(path);
-  const button = list[index];
+function editButton(layoutName, buttonIndex) {
+  currentEditingInfo = { layoutName, buttonIndex };
+  const layout = findLayoutByName(layoutName);
+  
+  if (!layout || buttonIndex >= layout.buttons.length) {
+    showAlert("Button not found.");
+    return;
+  }
 
-  document.getElementById("buttonNameInput").value = button.label;
+  const button = layout.buttons[buttonIndex];
+  
+  // Prepare the modal with multilingual support
+  window.currentEditingButton = button;
+  prepareButtonModal(button);
+  
+  document.getElementById("buttonNameInput").value = getDisplayLabel(button);
   document.getElementById("buttonImageInput").value = button.icon;
   showModal();
 }
 
 function saveButton() {
   if (!currentEditingInfo) return;
-  const { path, index } = currentEditingInfo;
+  const { layoutName, buttonIndex } = currentEditingInfo;
 
+  const layout = findLayoutByName(layoutName);
+  if (!layout || buttonIndex >= layout.buttons.length) {
+    showAlert("Button not found.");
+    return;
+  }
+
+  const button = layout.buttons[buttonIndex];
   const newName = document.getElementById("buttonNameInput").value.trim();
+  
   if (!newName) {
     showAlert("Please insert a name for the button.");
     return;
   }
 
-  const list = findCurrentList(path);
-  list[index].label = newName;
+  // Save multilingual labels
+  saveButtonLabels(button);
 
   renderButtonList();
   updateMockup();
@@ -60,36 +111,53 @@ function saveButton() {
 
 function handleSubfolder() {
   if (!currentEditingInfo) return;
-  const { path, index } = currentEditingInfo;
-  const list = findCurrentList(path);
-  const button = list[index];
+  const { layoutName, buttonIndex } = currentEditingInfo;
+  
+  const layout = findLayoutByName(layoutName);
+  if (!layout || buttonIndex >= layout.buttons.length) {
+    showAlert("Button not found.");
+    return;
+  }
+
+  const button = layout.buttons[buttonIndex];
 
   if (button.type === "tag") {
-    if (
-      confirm(
-        `Convert "${button.label}" to a subfolder? You can´t undone this action.`
-      )
-    ) {
-      button.type = "layout";
-      button.subfolder = {
-        name: button.label.replace(/\s+/g, "_") + "_layout",
-        buttons: [],
-      };
-      showAlert(`"${button.label}" now is a subfolder.`);
+    if (confirm(`Convert "${getDisplayLabel(button)}" to a subfolder? You can't undo this action.`)) {
+      // Create new sublayout
+      const sublayoutName = button.labels.en?.replace(/\s+/g, "_") + "_layout" || 
+                           getDisplayLabel(button).replace(/\s+/g, "_") + "_layout";
+      
+      // Change button type to page
+      button.type = "page";
+      button.targetLayout = sublayoutName;
+      
+      // Create the new layout in the XML file
+      const activeLayout = folderManager.getActiveLayout();
+      const newLayout = new Layout(sublayoutName);
+      activeLayout.xmlFile.addLayout(newLayout);
+      
+      showAlert(`"${getDisplayLabel(button)}" is now a subfolder.`);
       renderButtonList();
       updateMockup();
       closeModal();
     }
   } else {
-    showAlert(`"${button.label}" is already a subfolder.`);
+    showAlert(`"${getDisplayLabel(button)}" is already a subfolder.`);
   }
 }
 
-function deleteButton(path, index) {
-  const list = findCurrentList(path);
-  const button = list[index];
-  if (confirm(`Are you sure you want to delete "${button.label}"?`)) {
-    list.splice(index, 1);
+function deleteButton(layoutName, buttonIndex) {
+  const layout = findLayoutByName(layoutName);
+  if (!layout || buttonIndex >= layout.buttons.length) {
+    showAlert("Button not found.");
+    return;
+  }
+
+  const button = layout.buttons[buttonIndex];
+  const buttonLabel = getDisplayLabel(button);
+  
+  if (confirm(`Are you sure you want to delete "${buttonLabel}"?`)) {
+    layout.removeButton(buttonIndex);
     renderButtonList();
     updateMockup();
   }
@@ -97,10 +165,37 @@ function deleteButton(path, index) {
 
 function deleteButtonFromModal() {
   if (!currentEditingInfo) return;
-  const { path, index } = currentEditingInfo;
-  const list = findCurrentList(path);
-  list.splice(index, 1);
-  renderButtonList();
-  updateMockup();
-  closeModal();
+  const { layoutName, buttonIndex } = currentEditingInfo;
+  
+  const layout = findLayoutByName(layoutName);
+  if (!layout || buttonIndex >= layout.buttons.length) {
+    showAlert("Button not found.");
+    return;
+  }
+
+  const button = layout.buttons[buttonIndex];
+  const buttonLabel = getDisplayLabel(button);
+  
+  if (confirm(`Are you sure you want to delete "${buttonLabel}"?`)) {
+    layout.removeButton(buttonIndex);
+    renderButtonList();
+    updateMockup();
+    closeModal();
+  }
+}
+
+// Helper function to get current mockup layout name
+function getCurrentMockupLayoutName() {
+  if (currentMockupPath && currentMockupPath.length > 0) {
+    return currentMockupPath[currentMockupPath.length - 1];
+  }
+  return "root";
+}
+
+// Helper function to navigate to a sublayout
+function navigateToSublayout(targetLayoutName) {
+  if (!currentMockupPath.includes(targetLayoutName)) {
+    currentMockupPath.push(targetLayoutName);
+    updateMockup();
+  }
 }

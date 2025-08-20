@@ -1,7 +1,3 @@
-let layoutData = {
-  name: "root",
-  buttons: [],
-};
 const mockupBackButton = document.getElementById("mockupBackButton");
 let currentMockupPath = ["root"];
 
@@ -12,51 +8,65 @@ function renderButtonList() {
   const listElement = document.getElementById("buttonList");
   listElement.innerHTML = "";
 
-  if (layoutData.buttons.length === 0) {
-    listElement.innerHTML =
-      '<p style="color: #718096; text-align: center; font-style: italic;">No buttons added yet</p>';
+  const activeLayout = folderManager?.getActiveLayout();
+  if (!activeLayout) {
+    listElement.innerHTML = '<p style="color: #718096; text-align: center; font-style: italic;">No layout loaded</p>';
     return;
   }
 
-  const renderLevel = (buttons, parentPath, level) => {
-    buttons.forEach((btn, index) => {
-      const currentPath = [...parentPath];
+  const layouts = activeLayout.xmlFile.layouts;
+  const rootLayout = layouts["root"];
+  
+  if (!rootLayout || rootLayout.buttons.length === 0) {
+    listElement.innerHTML = '<p style="color: #718096; text-align: center; font-style: italic;">No buttons added yet</p>';
+    return;
+  }
+
+  const renderLevel = (layout, level = 0) => {
+    if (!layout || !layout.buttons) return;
+    
+    layout.buttons.forEach((button, index) => {
       const div = document.createElement("div");
       div.className = "button-item";
       div.style.marginLeft = `${level * 20}px`;
 
-      let iconHtml = `<img src="data:image/png;base64,${btn.data}" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">`;
-      if (btn.type === "layout") {
-        iconHtml = "📁 "; 
+      let iconHtml = "";
+      if (button.data) {
+        iconHtml = `<img src="data:image/png;base64,${button.data}" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">`;
+      } else if (button.type === "page") {
+        iconHtml = "📁 ";
+      } else {
+        iconHtml = "🔘 ";
       }
 
-      // Obtener el label apropiado (usar el primer idioma disponible o el label original)
-      const displayLabel = getDisplayLabel(btn);
+      const displayLabel = getDisplayLabel(button);
 
       div.innerHTML = `
-                <div class="button-info">${iconHtml}${displayLabel}</div>
-                <div class="button-actions">
-                    <button class="btn-edit" onclick='editButton(${JSON.stringify(
-                      currentPath
-                    )}, ${index})'>Edit</button>
-                </div>
-            `;
+        <div class="button-info">${iconHtml}${displayLabel}</div>
+        <div class="button-actions">
+          <button class="btn-edit" onclick='editButton("${layout.name}", ${index})'>Edit</button>
+        </div>
+      `;
       listElement.appendChild(div);
 
-      if (btn.type === "layout") {
-        currentPath.push(btn.subfolder.name);
-        renderLevel(btn.subfolder.buttons, currentPath, level + 1);
+      // If it's a page button, render its sublayout
+      if (button.type === "page" && button.targetLayout) {
+        const sublayout = layouts[button.targetLayout];
+        if (sublayout) {
+          renderLevel(sublayout, level + 1);
+        }
       }
     });
   };
 
-  renderLevel(layoutData.buttons, ["root"], 0);
+  renderLevel(rootLayout, 0);
 }
 
 function updateMockup() {
   const grid = document.getElementById("mockButtonGrid");
   grid.innerHTML = "";
 
+  // Fixed buttons (always present)
   const fixedButtons = [
     { icon: "🔴", label: "Voice record" },
     { icon: "📷", label: "Take photo" },
@@ -79,35 +89,49 @@ function updateMockup() {
     grid.appendChild(btn);
   });
 
-  const currentList = findCurrentList(currentMockupPath);
-  if (!currentList) return;
+  // Get current layout
+  const currentLayoutName = getCurrentMockupLayoutName();
+  const currentLayout = findLayoutByName(currentLayoutName);
+  
+  if (!currentLayout) {
+    mockupBackButton.style.display = "none";
+    return;
+  }
 
-  mockupBackButton.style.display =
-    currentMockupPath.length > 1 ? "block" : "none";
+  // Show/hide back button
+  mockupBackButton.style.display = currentMockupPath.length > 1 ? "block" : "none";
 
-  currentList.forEach((btn, index) => {
-    const button = document.createElement("div");
-    button.className = "mock-button has-custom-icon";
+  // Add custom buttons
+  currentLayout.buttons.forEach((button, index) => {
+    const btnElement = document.createElement("div");
+    btnElement.className = "mock-button has-custom-icon";
 
     const iconDiv = document.createElement("div");
     iconDiv.className = "icon";
-    iconDiv.style.backgroundImage = `url(data:image/png;base64,${btn.data})`;
+    
+    if (button.data) {
+      iconDiv.style.backgroundImage = `url(data:image/png;base64,${button.data})`;
+    } else {
+      iconDiv.textContent = button.type === "page" ? "📁" : "🔘";
+    }
 
     const label = document.createElement("span");
-    // En el mockup, mostrar el label del primer idioma disponible o el original
-    label.textContent = getDisplayLabel(btn);
+    label.textContent = getDisplayLabel(button);
 
-    button.appendChild(iconDiv);
-    button.appendChild(label);
-    grid.appendChild(button);
+    btnElement.appendChild(iconDiv);
+    btnElement.appendChild(label);
+    grid.appendChild(btnElement);
 
-    if (btn.type === "layout") {
-      button.onclick = () => {
-        currentMockupPath.push(btn.subfolder.name);
-        updateMockup();
+    // Handle click events
+    if (button.type === "page") {
+      btnElement.onclick = () => {
+        if (button.targetLayout) {
+          currentMockupPath.push(button.targetLayout);
+          updateMockup();
+        }
       };
     } else {
-      button.onclick = () => editButton(currentMockupPath, index);
+      btnElement.onclick = () => editButton(currentLayout.name, index);
     }
   });
 }
@@ -119,59 +143,68 @@ function goBackMockup() {
   }
 }
 
-// Nueva función para obtener el label apropiado para mostrar
-function getDisplayLabel(btn) {
-  // Si tiene labels multiidioma, usar el primero disponible
-  if (btn.labels && Object.keys(btn.labels).length > 0) {
+// Function to get current mockup layout name
+function getCurrentMockupLayoutName() {
+  if (currentMockupPath && currentMockupPath.length > 0) {
+    return currentMockupPath[currentMockupPath.length - 1];
+  }
+  return "root";
+}
+
+// Function to get appropriate label for display
+function getDisplayLabel(button) {
+  if (!button) return "Unnamed Button";
+  
+  // If button has multilingual labels, use them
+  if (button.labels && Object.keys(button.labels).length > 0) {
     const selectedLanguages = window.getSelectedLanguages ? window.getSelectedLanguages() : ['en'];
     
-    // Intentar encontrar un label en los idiomas seleccionados
+    // Try to find a label in the selected languages
     for (const lang of selectedLanguages) {
-      if (btn.labels[lang]) {
-        return btn.labels[lang];
+      if (button.labels[lang]) {
+        return button.labels[lang];
       }
     }
     
-    // Si no encuentra, usar el primer label disponible
-    const firstLabel = Object.values(btn.labels)[0];
+    // If not found, use the first available label
+    const firstLabel = Object.values(button.labels)[0];
     if (firstLabel) return firstLabel;
   }
   
-  // Fallback al label original
-  return btn.label || "Unnamed Button";
+  // Fallback to original label or default
+  return button.label || "Unnamed Button";
 }
 
-// Función para inicializar los labels multiidioma de un botón
-function initializeButtonLabels(btn, initialLabel) {
-  if (!btn.labels) {
-    btn.labels = {};
+// Function to initialize button labels for multilingual support
+function initializeButtonLabels(button, initialLabel) {
+  if (!button.labels) {
+    button.labels = {};
   }
   
-  // Si no tiene ningún label, usar el inicial para todos los idiomas
   const selectedLanguages = window.getSelectedLanguages ? window.getSelectedLanguages() : ['en'];
   
   selectedLanguages.forEach(lang => {
-    if (!btn.labels[lang]) {
-      btn.labels[lang] = initialLabel || btn.label || "Unnamed Button";
+    if (!button.labels[lang]) {
+      button.labels[lang] = initialLabel || button.label || "Unnamed Button";
     }
   });
 }
 
-// Función para preparar el modal de edición
-function prepareButtonModal(btn) {
-  window.currentEditingButton = btn;
+// Function to prepare the button modal for editing
+function prepareButtonModal(button) {
+  window.currentEditingButton = button;
   
-  // Inicializar labels si no existen
-  if (btn.label && !btn.labels) {
-    initializeButtonLabels(btn, btn.label);
+  // Initialize labels if they don't exist
+  if (!button.labels && button.label) {
+    initializeButtonLabels(button, button.label);
   }
   
-  // Actualizar el selector de idiomas del modal
+  // Update the language selector in the modal
   if (window.updateButtonModalLanguageSelect) {
     window.updateButtonModalLanguageSelect();
   }
   
-  // Seleccionar el primer idioma disponible y cargar su valor
+  // Set up the first language and its value
   const buttonModalSelect = document.getElementById("buttonLanguageSelect");
   const buttonNameInput = document.getElementById("buttonNameInput");
   
@@ -183,35 +216,37 @@ function prepareButtonModal(btn) {
       buttonModalSelect.value = firstLang;
       buttonModalSelect.dataset.currentLang = firstLang;
       
-      const labelValue = btn.labels?.[firstLang] || btn.label || "";
+      const labelValue = button.labels?.[firstLang] || button.label || "";
       buttonNameInput.value = labelValue;
     }
   }
 }
 
-// Función para guardar los cambios del modal
-function saveButtonLabels(btn) {
+// Function to save button labels from the modal
+function saveButtonLabels(button) {
   const buttonModalSelect = document.getElementById("buttonLanguageSelect");
   const buttonNameInput = document.getElementById("buttonNameInput");
   
   if (buttonModalSelect && buttonNameInput) {
     const currentLang = buttonModalSelect.dataset.currentLang;
     if (currentLang && buttonNameInput.value.trim()) {
-      if (!btn.labels) {
-        btn.labels = {};
+      if (!button.labels) {
+        button.labels = {};
       }
-      btn.labels[currentLang] = buttonNameInput.value.trim();
+      // Use the core Button class method
+      button.addLabel(currentLang, buttonNameInput.value.trim());
     }
   }
   
-  // Actualizar el label principal con el primer idioma disponible
-  if (btn.labels && Object.keys(btn.labels).length > 0) {
-    btn.label = getDisplayLabel(btn);
+  // Update the main label with the display label
+  if (button.labels && Object.keys(button.labels).length > 0) {
+    button.label = getDisplayLabel(button);
   }
 }
 
-// Exponer funciones globalmente
+// Expose functions globally
 window.prepareButtonModal = prepareButtonModal;
 window.saveButtonLabels = saveButtonLabels;
 window.getDisplayLabel = getDisplayLabel;
 window.initializeButtonLabels = initializeButtonLabels;
+window.getCurrentMockupLayoutName = getCurrentMockupLayoutName;

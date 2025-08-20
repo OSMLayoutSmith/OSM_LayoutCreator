@@ -9,9 +9,9 @@ function toggleConfigMode() {
 }
 
 function processDownloadLayout() {
-  showAlert("Download process initiated.");
+  console.log("processDownloadLayout called - handled by DownloadLayout component");
 }
 
 function processUploadToGithub() {
-  showAlert("Upload process initiated.");
+  console.log("processUploadToGithub called - handled by UploadToGithub component");
 }
