@@ -236,6 +236,18 @@ myLayout.zip
     <!-- Google Translate (hidden) -->
     <div id="google_translate_element" style="display: none;"></div>
 
+    <!-- Confirmation template Modal -->
+    <div class="modal" id="confirmModal" style="display:none;">
+      <div class="modal-content" style="max-width: 400px;">
+        <h2 id="confirmTitle" data-i18n="confirmTitle"></h2>
+        <p id="confirmMessage" style="margin: 20px 0;"></p>
+        <div class="modal-actions">
+          <button class="btn-modal btn-save" id="confirmYesBtn">Yes</button>
+          <button class="btn-modal btn-cancel" id="confirmNoBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Frontend Scripts -->
     <script src="./scripts/constants.js"></script>
     <script src="./scripts/utils.js"></script>
