@@ -8,9 +8,61 @@ function toggleConfigMode() {
     mode === "zip" ? "block" : "none";
 }
 
-function processDownloadLayout() {
-  console.log("processDownloadLayout called - handled by DownloadLayout component");
+async function processDownloadLayout() {
+  const layoutName = document.getElementById("layoutRepoName").value;
+  const repo = document.getElementById("repoName").value;
+  const owner = document.getElementById("repoOwner").value;
+  const branch = document.getElementById("repoBranch").value;
+
+  if (!layoutName || !repo || !owner || !branch) {
+    showAlert("Please fill in all download fields (Layout, Repo, Owner, Branch).");
+    return;
+  }
+
+  try {
+    const body = {
+      mode: "custom",
+      name: layoutName,
+      repo: repo,
+      owner: owner,
+      branch: branch
+    };
+
+    const response = await fetch("https://osmbackend-production.up.railway.app/api/download", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+    }
+
+    // 👉 Recibir como ArrayBuffer
+    const buffer = await response.arrayBuffer();
+
+    // 👉 Reutilizar la lógica de carga del ZIP en memoria
+    const importedLayoutName = await window.folderManager.importFromZipBuffer(buffer);
+
+    layoutData = folderManager.getLayout(importedLayoutName).xmlFile; 
+    currentMockupPath = ["root"];
+    currentIconData = null;
+
+    renderInfoPanel();
+    renderButtonList();
+    updateMockup();
+
+    showAlert(`Layout "${importedLayoutName}" loaded successfully from GitHub.`);
+    console.log("📂 Estructura cargada:", window.folderManager.toString());
+
+  } catch (error) {
+    console.error("Error downloading layout:", error);
+    showAlert("Error downloading layout: " + error.message);
+  }
 }
+
 
 async function processUploadToGithub(){
   const layoutName = document.getElementById("layoutName").value;
