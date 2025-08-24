@@ -127,12 +127,14 @@ body {
 }
 
 .phone-screen {
-  background: #2d2d2d;
-  border-radius: 20px;
-  padding: 20px;
-  height: 600px;
-  display: flex;           /* 👈 */
-  flex-direction: column;  /* 👈 */
+    background: #2d2d2d;
+    border-radius: 20px;
+    padding: 20px;
+    height: 600px;
+    display: flex;
+    /* 👈 */
+    flex-direction: column;
+    /* 👈 */
 }
 
 
@@ -165,18 +167,23 @@ body {
 }
 
 .button-grid {
-  flex: 1 1 auto;          /* ocupa el espacio disponible */
-  min-height: 0;           /* evita overflow en contenedores flex */
-  overflow-y: auto;
+    flex: 1 1 auto;
+    /* ocupa el espacio disponible */
+    min-height: 0;
+    /* evita overflow en contenedores flex */
+    overflow-y: auto;
 
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  padding-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding-bottom: 20px;
 
-  align-content: start;     /* 👈 no estires filas para llenar */
-  align-items: start;       /* 👈 los ítems no se estiran verticalmente */
-  grid-auto-rows: max-content; /* 👈 cada fila toma el alto de su contenido */
+    align-content: start;
+    /* 👈 no estires filas para llenar */
+    align-items: start;
+    /* 👈 los ítems no se estiran verticalmente */
+    grid-auto-rows: max-content;
+    /* 👈 cada fila toma el alto de su contenido */
 }
 
 
@@ -220,27 +227,27 @@ body {
 
 
 .nav-bar {
-  height: 50px;
-  background: #111;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  border-top: 1px solid #333;
-  border-radius: 0 0 20px 20px;
+    height: 50px;
+    background: #111;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #333;
+    border-radius: 0 0 20px 20px;
 }
 
 
 .nav-btn {
-  background: none;
-  border: none;
-  color: #bbb;
-  font-size: 20px;
-  cursor: pointer;
-  transition: color 0.2s ease;
+    background: none;
+    border: none;
+    color: #bbb;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .nav-btn:hover {
-  color: white;
+    color: white;
 }
 
 h1 {
@@ -273,6 +280,7 @@ h1 {
     transition: all 0.3s ease;
     background: white;
 }
+
 .form-group textarea {
     width: 100%;
     padding: 12px 16px;
@@ -281,8 +289,8 @@ h1 {
     font-size: 16px;
     transition: all 0.3s ease;
     background: white;
-    min-height: 120px;  
-    resize: vertical;   
+    min-height: 120px;
+    resize: vertical;
 }
 
 .form-group textarea:focus {
@@ -454,10 +462,17 @@ h1 {
     background: white;
     border-radius: 16px;
     padding: 30px;
-    max-width: 400px;
+    max-width: 600px;
     width: 90%;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+
+    /* 🔥 nuevo */
+    max-height: 90vh;
+    /* límite de altura al 80% de la pantalla */
+    overflow-y: auto;
+    /* permite scroll vertical dentro del modal */
 }
+
 
 .modal-content .form-group {
     margin-bottom: 16px;

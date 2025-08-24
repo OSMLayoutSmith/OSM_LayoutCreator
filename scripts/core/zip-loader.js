@@ -95,7 +95,6 @@
                 }
             }
 
-            // Procesar XML de cada idioma → retornando xmlFile
             for (const lang of languages) {
                 const layoutXmlPath = `${layoutName}/${lang}.xml`;
                 if (!zip.file(layoutXmlPath)) continue;
@@ -114,7 +113,6 @@
         }
 
         _parseMetadata(xmlStr, layoutName) {
-            // idiomas
             const languages = [];
             const optionMatches = xmlStr.matchAll(/<option[^>]*iso\s*=\s*"([^"]+)"[^>]*>/gi);
             for (const match of optionMatches) languages.push(match[1]);
@@ -127,14 +125,13 @@
                 throw e;
             }
 
-            // opciones completas
             const optionRegex = /<option[^>]*iso\s*=\s*"([^"]+)"[^>]*name\s*=\s*"([^"]+)"[^>]*>([^<]*)<\/option>/gi;
             let opt;
             while ((opt = optionRegex.exec(xmlStr)) !== null) {
+                console.log("Adding metadata option:", opt[1], opt[2], opt[3]);
                 metadata.addOption(opt[1], opt[2], opt[3].trim());
             }
 
-            // github
             const githubMatch = xmlStr.match(/<github\s+username="([^"]+)"\s+repo="([^"]+)"\s+branch="([^"]+)"\s*\/>/i);
             if (githubMatch) {
                 metadata.username = githubMatch[1];
