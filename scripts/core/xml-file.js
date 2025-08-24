@@ -8,7 +8,7 @@
 }(typeof self !== "undefined" ? self : this, function () {
 
     class XMLFile {
-        constructor() { this.layouts = {}; this.languajes = []; }
+        constructor() { this.layouts = {}; this.languages = []; }
         addLayout(layout) { this.layouts[layout.name] = layout; }
         removeLayout(name) { delete this.layouts[name]; }
         newButton(button) { this.layouts[button.origin]?.addButton(button); }
@@ -23,9 +23,9 @@
                 if (btn) { btn.origin = toLayout; tl.addButton(btn); }
             }
         }
-        addLanguage(lang) { if (!this.languajes.includes(lang)) { this.languajes.push(lang); } }
+        addLanguage(lang) { if (!this.languages.includes(lang)) { this.languages.push(lang); } }
         removeLanguage(lang) { 
-            this.languajes = this.languajes.filter(l => l !== lang); 
+            this.languages = this.languages.filter(l => l !== lang); 
             // Remove language from all buttons
             Object.values(this.layouts).forEach(layout => {
                 layout.buttons.forEach(button => {
@@ -33,9 +33,9 @@
                 });
             });
         }
-        getLanguages() { return this.languajes; }
+        getLanguages() { return this.languages; }
         toString(lang = "en") {
-            if (!this.languajes.includes(lang)) { return "Nullable"; }
+            if (!this.languages.includes(lang)) { return "Nullable"; }
             return `<?xml version="1.0" encoding="UTF-8"?>\n<layouts>\n${Object.values(this.layouts).map(l => l.toString(lang)).join("")}</layouts>`;
         }
     }

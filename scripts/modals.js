@@ -19,6 +19,13 @@ function closeConfigModal() {
 
 function showAlert(message, title = "Information") {
   const modal = document.getElementById("alertModal");
+  
+  //display none for all other modals class modal-content
+  let modals = document.getElementsByClassName("modal");
+  for (let i = 0; i < modals.length; i++) {
+    modals[i].classList.remove("show");
+  }
+
   document.getElementById("alertTitle").innerText = title;
   document.getElementById("alertMessage").innerText = message;
   modal.classList.add("show");

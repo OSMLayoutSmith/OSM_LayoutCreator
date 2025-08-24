@@ -72,18 +72,24 @@
         }
 
         async importFromZipFile(filePath) {
+            try{
             const loader = new ZipLoader();
             const layout = await loader.loadFromFile(filePath);
             this.layouts[layout.name] = layout;
-            if (!this.activeLayout) this.activeLayout = layout.name;
-            return layout.name;
+            this.activeLayout = layout.name;
+            return layout.name;}
+            catch(e){
+                console.error("unexpected:", e);
+                throw e;    
+            }
+            return "";
         }
 
         async importFromZipBuffer(buffer) {
             const loader = new ZipLoader();
             const layout = await loader.loadFromFile(buffer);
             this.layouts[layout.name] = layout;
-            if (!this.activeLayout) this.activeLayout = layout.name;
+            this.activeLayout = layout.name;
             return layout.name;
         }
 

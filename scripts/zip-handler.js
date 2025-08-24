@@ -47,24 +47,20 @@ function processZipFile() {
         return;
     }
 
-    // Leer el archivo como ArrayBuffer
     const reader = new FileReader();
     reader.onload = async function (e) {
         try {
             const buffer = e.target.result;
             
-            // Usar la instancia global de FolderManager que ya inicializa init.js
             const layoutName = await window.folderManager.importFromZipBuffer(buffer);
-
-            // Actualizar la vista con el layout importado
-            layoutData = folderManager.getLayout(layoutName).xmlFile; // o como uses layoutData
+            layoutData = folderManager.getLayout(layoutName).xmlFile; 
             currentMockupPath = ["root"];
             currentIconData = null;
 
+            renderInfoPanel();
             renderButtonList();
             updateMockup();
             showAlert(`Layout "${layoutName}" loaded successfully from ZIP.`);
-            //imprimir tostring del folderManager en consola
             console.log(window.folderManager.toString());
         } catch (err) {
             console.error("Error processing zip file:", err);

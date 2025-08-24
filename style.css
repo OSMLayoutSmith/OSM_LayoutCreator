@@ -123,15 +123,16 @@ body {
     padding: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     border: 8px solid #333;
+    min-width: 390px;
 }
 
 .phone-screen {
-    background: #2d2d2d;
-    border-radius: 20px;
-    padding: 20px;
-    height: 600px;
-    position: relative;
-    overflow-y: auto;
+  background: #2d2d2d;
+  border-radius: 20px;
+  padding: 20px;
+  height: 600px;
+  display: flex;           /* 👈 */
+  flex-direction: column;  /* 👈 */
 }
 
 
@@ -164,11 +165,20 @@ body {
 }
 
 .button-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+  flex: 1 1 auto;          /* ocupa el espacio disponible */
+  min-height: 0;           /* evita overflow en contenedores flex */
+  overflow-y: auto;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding-bottom: 20px;
+
+  align-content: start;     /* 👈 no estires filas para llenar */
+  align-items: start;       /* 👈 los ítems no se estiran verticalmente */
+  grid-auto-rows: max-content; /* 👈 cada fila toma el alto de su contenido */
 }
+
 
 .mock-button {
     background: #404040;
@@ -181,7 +191,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    min-height: 80px;
+    min-height: 100px;
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -208,24 +218,29 @@ body {
     background-position: center;
 }
 
-.reset-button {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    background: #ff4757;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
+
+.nav-bar {
+  height: 50px;
+  background: #111;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid #333;
+  border-radius: 0 0 20px 20px;
 }
 
-.reset-button:hover {
-    background: #ff3742;
-    transform: translateY(-2px);
+
+.nav-btn {
+  background: none;
+  border: none;
+  color: #bbb;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.nav-btn:hover {
+  color: white;
 }
 
 h1 {
@@ -428,6 +443,7 @@ h1 {
     justify-content: center;
     align-items: center;
     overflow-y: auto;
+    z-index: 9999;
 }
 
 .modal.show {

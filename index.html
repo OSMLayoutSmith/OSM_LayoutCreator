@@ -69,13 +69,12 @@
             </div>
             <div class="form-group">
                 <label for="layoutDesc">Download description</label>
-                <input type="text" id="layoutDesc" onchange="setLayoutDownloadDescription(this.value)" placeholder="Text here will appear when downloading the layout">
+                <input type="text" id="layoutDesc" onchange="setLayoutDownloadDescription(this.value)"
+                    placeholder="Text here will appear when downloading the layout">
             </div>
             <div class="form-group">
                 <label for="layoutREADME">README text (for GitHub)</label>
-                <textarea id="layoutREADME" onchange="setLayoutREADME(this.value)"
-                    placeholder=
-"# this is a title 
+                <textarea id="layoutREADME" onchange="setLayoutREADME(this.value)" placeholder="# this is a title 
 ## this is a subtitle
 here a text sample"></textarea>
             </div>
@@ -115,8 +114,13 @@ here a text sample"></textarea>
                 <div class="app-header">Track logger: #1</div>
                 <div class="app-subtitle"><span style="color: #00ff00;">238°</span> Accuracy 2m (18/21)</div>
                 <div class="button-grid" id="mockButtonGrid"></div>
-                <button class="reset-button" id="mockupBackButton" onclick="goBackMockup()" style="display: none;">Go back</button>
+
             </div>
+            <div class="nav-bar" id="mockupNavBar">
+                    <button class="nav-btn" id="mockupBackButton" onclick="goBackMockup()">⮌</button>
+                    <button class="nav-btn" id="mockupBackButton" onclick="goBackMockup()">◯</button>
+                    <button class="nav-btn" id="mockupBackButton" onclick="goBackMockup()">≡</button>
+                </div>
         </div>
     </div>
 
@@ -238,14 +242,14 @@ myLayout.zip
 
     <!-- Confirmation template Modal -->
     <div class="modal" id="confirmModal" style="display:none;">
-      <div class="modal-content" style="max-width: 400px;">
-        <h2 id="confirmTitle" data-i18n="confirmTitle"></h2>
-        <p id="confirmMessage" style="margin: 20px 0;"></p>
-        <div class="modal-actions">
-          <button class="btn-modal btn-save" id="confirmYesBtn">Yes</button>
-          <button class="btn-modal btn-cancel" id="confirmNoBtn">Cancel</button>
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 id="confirmTitle" data-i18n="confirmTitle"></h2>
+            <p id="confirmMessage" style="margin: 20px 0;"></p>
+            <div class="modal-actions">
+                <button class="btn-modal btn-save" id="confirmYesBtn">Yes</button>
+                <button class="btn-modal btn-cancel" id="confirmNoBtn">Cancel</button>
+            </div>
         </div>
-      </div>
     </div>
 
     <!-- Frontend Scripts -->

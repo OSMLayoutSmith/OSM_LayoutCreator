@@ -78,20 +78,54 @@ document.addEventListener("DOMContentLoaded", () => {
       if (this.files[0]) {
         const reader = new FileReader();
         reader.onload = function (e) {
-          currentIconData = e.target.result.split(",")[1];
-          const img = document.createElement("img");
+          const img = new Image();
           img.src = e.target.result;
-          img.alt = "Icon preview";
-          img.style.width = "250px";
-          img.style.height = "250px";
-          img.style.borderRadius = "8px";
-          img.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
-          preview.innerHTML = "";
-          preview.appendChild(img);
+
+          img.onload = function () {
+            let { width, height } = img;
+
+            if (width > 350 || height > 350) {
+              const canvas = document.createElement("canvas");
+              const ctx = canvas.getContext("2d");
+
+              const scale = Math.min(350 / width, 350 / height);
+              canvas.width = width * scale;
+              canvas.height = height * scale;
+
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+              const resizedDataUrl = canvas.toDataURL("image/png");
+              currentIconData = resizedDataUrl.split(",")[1]; 
+
+              const resizedImg = document.createElement("img");
+              resizedImg.src = resizedDataUrl;
+              resizedImg.alt = "Icon preview";
+              resizedImg.style.width = canvas.width + "px";
+              resizedImg.style.height = canvas.height + "px";
+              resizedImg.style.borderRadius = "8px";
+              resizedImg.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
+              preview.innerHTML = "";
+              preview.appendChild(resizedImg);
+
+            } else {
+              currentIconData = e.target.result.split(",")[1];
+
+              const normalImg = document.createElement("img");
+              normalImg.src = e.target.result;
+              normalImg.alt = "Icon preview";
+              normalImg.style.width = width + "px";
+              normalImg.style.height = height + "px";
+              normalImg.style.borderRadius = "8px";
+              normalImg.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
+              preview.innerHTML = "";
+              preview.appendChild(normalImg);
+            }
+          };
         };
         reader.readAsDataURL(this.files[0]);
       }
     });
+
 
     // Modal event listeners
     document

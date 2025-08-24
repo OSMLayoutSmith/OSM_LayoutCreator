@@ -68,7 +68,7 @@
             const metadataObj = metadataResult.metadata;
 
             // Crear XMLFile y registrar idiomas
-            const xmlFile = new XMLFile();
+            let xmlFile = new XMLFile();
             languages.forEach(lang => xmlFile.addLanguage(lang));
 
             // Cargar README.md si existe
@@ -95,16 +95,15 @@
                 }
             }
 
-            // Procesar XML de cada idioma
+            // Procesar XML de cada idioma → retornando xmlFile
             for (const lang of languages) {
                 const layoutXmlPath = `${layoutName}/${lang}.xml`;
                 if (!zip.file(layoutXmlPath)) continue;
 
                 const layoutStr = await zip.file(layoutXmlPath).async("string");
-                await this._parseLayoutXml(layoutStr, xmlFile, lang, zip, layoutName);
+                xmlFile = await this._parseLayoutXml(layoutStr, xmlFile, lang, zip, layoutName);
             }
 
-            // Devolver estructura para FolderManager
             return {
                 name: layoutName,
                 xmlFile,
@@ -114,26 +113,28 @@
             };
         }
 
-
         _parseMetadata(xmlStr, layoutName) {
-            // Extraer idiomas disponibles - regex que maneja espacios alrededor del =
+            // idiomas
             const languages = [];
             const optionMatches = xmlStr.matchAll(/<option[^>]*iso\s*=\s*"([^"]+)"[^>]*>/gi);
-            for (const match of optionMatches) {
-                languages.push(match[1]);
+            for (const match of optionMatches) languages.push(match[1]);
+
+            let metadata;
+            try {
+                metadata = new Metadata(layoutName);
+            } catch (e) {
+                console.error("Error creating Metadata object:", e);
+                throw e;
             }
 
-            // Crear objeto Metadata con el nombre del layout
-            const metadata = new Metadata(layoutName);
-
-            // Extraer opciones completas - también con espacios flexibles
+            // opciones completas
             const optionRegex = /<option[^>]*iso\s*=\s*"([^"]+)"[^>]*name\s*=\s*"([^"]+)"[^>]*>([^<]*)<\/option>/gi;
             let opt;
             while ((opt = optionRegex.exec(xmlStr)) !== null) {
                 metadata.addOption(opt[1], opt[2], opt[3].trim());
             }
 
-            // Extraer info de github si existe
+            // github
             const githubMatch = xmlStr.match(/<github\s+username="([^"]+)"\s+repo="([^"]+)"\s+branch="([^"]+)"\s*\/>/i);
             if (githubMatch) {
                 metadata.username = githubMatch[1];
@@ -157,19 +158,29 @@
                     xmlFile.addLayout(layout);
                 }
 
-                // Regex mejorado para botones con mejor manejo de atributos
+                // Botones
                 const buttonRegex = /<button\b([^>]*)\/>/gi;
                 let btnMatch;
                 while ((btnMatch = buttonRegex.exec(match[2])) !== null) {
                     const attrs = btnMatch[1];
 
-                    // Extraer atributos con regex más robustos
                     const type = this._extractAttribute(attrs, 'type') || "";
-                    const label = this._extractAttribute(attrs, 'label') || "";
+                    let label = this._extractAttribute(attrs, 'label') || "";
                     const iconPath = this._extractAttribute(attrs, 'icon') || "";
                     const targetLayout = this._extractAttribute(attrs, 'targetlayout') || "#";
 
                     const iconFile = iconPath.split("/").pop();
+
+                    // Si no hay label
+                    if (!label) {
+                        if (layoutNameAttr === "root") {
+                            // en root -> no agregar este botón
+                            continue;
+                        } else {
+                            // en otros layouts -> usar el type como label
+                            label = type;
+                        }
+                    }
 
                     // Buscar si el botón ya existe en este layout
                     let button = layout.buttons.find(b => b.icon === iconFile && b.type === type);
@@ -180,13 +191,13 @@
                         layout.addButton(button);
                     }
 
-                    // Siempre añadir la etiqueta para este idioma
                     button.addLabel(lang, label);
                 }
             }
+            return xmlFile;
         }
 
-        // Método auxiliar para extraer atributos de manera más robusta (con espacios flexibles)
+
         _extractAttribute(attrString, attrName) {
             const regex = new RegExp(`${attrName}\\s*=\\s*"([^"]*)"`, 'i');
             const match = regex.exec(attrString);
@@ -196,7 +207,6 @@
         async _loadIconBase64(zip, layoutName, iconFile) {
             if (!iconFile) return null;
 
-            // Buscar en ambas variantes de carpeta de íconos
             const iconPaths = [
                 `${layoutName}/${layoutName}_icons/${iconFile}`,
                 `${layoutName}/${layoutName}_Icons/${iconFile}`

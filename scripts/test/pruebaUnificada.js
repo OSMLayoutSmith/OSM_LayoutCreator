@@ -61,4 +61,9 @@ const { FolderManager } = require("../core/folder-manager.js");
     // ===== 5️⃣ Mostrar disposición final =====
     console.log("\n📂 Estructura en FolderManager:");
     console.log(fm.toString());
+    console.log("\n📝 XML del layout importado:")
+    console.log(fm.getLayout("Hydranten").xmlFile.toString("de"));
+    //metadata
+    console.log("\n📝 Metadata del layout importado:")
+    console.log(fm.getLayout("Hydranten").metadata.toString());
 })();

@@ -1,8 +1,48 @@
-const mockupBackButton = document.getElementById("mockupBackButton");
 let currentMockupPath = ["root"];
 
 // Variable global para el botón que se está editando
 window.currentEditingButton = null;
+
+function renderInfoPanel() {
+  const nameElement = document.getElementById("layoutName");
+  const descElement = document.getElementById("layoutDesc");
+  const readmeElement = document.getElementById("layoutREADME");
+  const activeLayout = folderManager?.getActiveLayout();
+
+  const languages = document.getElementById("languageButtonsGrid");
+  languages.innerHTML = "";
+
+  if (activeLayout) {
+    nameElement.value = activeLayout.metadata?.layoutName || activeLayout.name;
+    descElement.value = activeLayout.metadata?.getOptions()[0][2] || "No description available.";
+    readmeElement.value = activeLayout.readme || "";
+
+    // Render language buttons
+    const availableLangs = activeLayout.xmlFile?.getLanguages?.() || [];
+
+    if (availableLangs.length > 0) {
+      // Sincronizar con el sistema central
+      if (window.setSelectedLanguages) {
+        window.setSelectedLanguages(availableLangs);
+      }
+
+      // Actualizar la UI relacionada
+      updateUIFromLoadedLayout(activeLayout.xmlFile);
+      renderButtonList();
+      updateMockup();
+    } else {
+      languages.innerHTML = `
+    <p style="color: #718096; text-align: center; font-style: italic;">
+      No languages available
+    </p>
+  `;
+    }
+  } else {
+    nameElement.value = "No layout loaded";
+    descElement.value = "";
+    readmeElement.value = "";
+  }
+}
 
 function renderButtonList() {
   const listElement = document.getElementById("buttonList");
@@ -13,10 +53,9 @@ function renderButtonList() {
     listElement.innerHTML = '<p style="color: #718096; text-align: center; font-style: italic;">No layout loaded</p>';
     return;
   }
-
   const layouts = activeLayout.xmlFile.layouts;
   const rootLayout = layouts["root"];
-  
+
   if (!rootLayout || rootLayout.buttons.length === 0) {
     listElement.innerHTML = '<p style="color: #718096; text-align: center; font-style: italic;">No buttons added yet</p>';
     return;
@@ -24,7 +63,7 @@ function renderButtonList() {
 
   const renderLevel = (layout, level = 0) => {
     if (!layout || !layout.buttons) return;
-    
+
     layout.buttons.forEach((button, index) => {
       const div = document.createElement("div");
       div.className = "button-item";
@@ -35,6 +74,12 @@ function renderButtonList() {
         iconHtml = `<img src="data:image/png;base64,${button.data}" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">`;
       } else if (button.type === "page") {
         iconHtml = "📁 ";
+      } else if (button.type === "textnote") {
+        iconHtml = "📝 ";
+      } else if (button.type === "voicerec") {
+        iconHtml = "🔴 ";
+      } else if (button.type === "picture") {
+        iconHtml = "📷 ";
       } else {
         iconHtml = "🔘 ";
       }
@@ -92,14 +137,10 @@ function updateMockup() {
   // Get current layout
   const currentLayoutName = getCurrentMockupLayoutName();
   const currentLayout = findLayoutByName(currentLayoutName);
-  
+
   if (!currentLayout) {
-    mockupBackButton.style.display = "none";
     return;
   }
-
-  // Show/hide back button
-  mockupBackButton.style.display = currentMockupPath.length > 1 ? "block" : "none";
 
   // Add custom buttons
   currentLayout.buttons.forEach((button, index) => {
@@ -108,11 +149,11 @@ function updateMockup() {
 
     const iconDiv = document.createElement("div");
     iconDiv.className = "icon";
-    
+
     if (button.data) {
       iconDiv.style.backgroundImage = `url(data:image/png;base64,${button.data})`;
     } else {
-      iconDiv.textContent = button.type === "page" ? "📁" : "🔘";
+      iconDiv.textContent = button.type === "page" ? "📁" : button.type === "textnote" ? "📝" : button.type === "voicerec" ? "🔴" : button.type === "picture" ? "📷" : "🔘";
     }
 
     const label = document.createElement("span");
@@ -134,6 +175,7 @@ function updateMockup() {
       btnElement.onclick = () => editButton(currentLayout.name, index);
     }
   });
+
 }
 
 function goBackMockup() {
@@ -154,23 +196,23 @@ function getCurrentMockupLayoutName() {
 // Function to get appropriate label for display
 function getDisplayLabel(button) {
   if (!button) return "Unnamed Button";
-  
+
   // If button has multilingual labels, use them
   if (button.labels && Object.keys(button.labels).length > 0) {
     const selectedLanguages = window.getSelectedLanguages ? window.getSelectedLanguages() : ['en'];
-    
+
     // Try to find a label in the selected languages
     for (const lang of selectedLanguages) {
       if (button.labels[lang]) {
         return button.labels[lang];
       }
     }
-    
+
     // If not found, use the first available label
     const firstLabel = Object.values(button.labels)[0];
     if (firstLabel) return firstLabel;
   }
-  
+
   // Fallback to original label or default
   return button.label || "Unnamed Button";
 }
@@ -180,9 +222,9 @@ function initializeButtonLabels(button, initialLabel) {
   if (!button.labels) {
     button.labels = {};
   }
-  
+
   const selectedLanguages = window.getSelectedLanguages ? window.getSelectedLanguages() : ['en'];
-  
+
   selectedLanguages.forEach(lang => {
     if (!button.labels[lang]) {
       button.labels[lang] = initialLabel || button.label || "Unnamed Button";
@@ -193,29 +235,29 @@ function initializeButtonLabels(button, initialLabel) {
 // Function to prepare the button modal for editing
 function prepareButtonModal(button) {
   window.currentEditingButton = button;
-  
+
   // Initialize labels if they don't exist
   if (!button.labels && button.label) {
     initializeButtonLabels(button, button.label);
   }
-  
+
   // Update the language selector in the modal
   if (window.updateButtonModalLanguageSelect) {
     window.updateButtonModalLanguageSelect();
   }
-  
+
   // Set up the first language and its value
   const buttonModalSelect = document.getElementById("buttonLanguageSelect");
   const buttonNameInput = document.getElementById("buttonNameInput");
-  
+
   if (buttonModalSelect && buttonNameInput) {
     const selectedLanguages = window.getSelectedLanguages ? window.getSelectedLanguages() : ['en'];
     const firstLang = selectedLanguages[0];
-    
+
     if (firstLang) {
       buttonModalSelect.value = firstLang;
       buttonModalSelect.dataset.currentLang = firstLang;
-      
+
       const labelValue = button.labels?.[firstLang] || button.label || "";
       buttonNameInput.value = labelValue;
     }
@@ -226,7 +268,7 @@ function prepareButtonModal(button) {
 function saveButtonLabels(button) {
   const buttonModalSelect = document.getElementById("buttonLanguageSelect");
   const buttonNameInput = document.getElementById("buttonNameInput");
-  
+
   if (buttonModalSelect && buttonNameInput) {
     const currentLang = buttonModalSelect.dataset.currentLang;
     if (currentLang && buttonNameInput.value.trim()) {
@@ -237,7 +279,7 @@ function saveButtonLabels(button) {
       button.addLabel(currentLang, buttonNameInput.value.trim());
     }
   }
-  
+
   // Update the main label with the display label
   if (button.labels && Object.keys(button.labels).length > 0) {
     button.label = getDisplayLabel(button);
