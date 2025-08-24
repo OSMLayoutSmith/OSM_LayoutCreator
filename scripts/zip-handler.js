@@ -122,9 +122,6 @@ function processZipFileLegacy() {
   })
   .then(data => {
     if (data.success) {
-      // Convert legacy data to core system
-      convertLegacyDataToCoreSystem(data.layoutData);
-      
       currentMockupPath = ["root"];
       currentIconData = null;
       renderButtonList();
@@ -138,10 +135,4 @@ function processZipFileLegacy() {
     console.error("Error processing zip file:", error);
     showAlert("Error processing zip file: " + error.message, "Error");
   });
-}
-
-function convertLegacyDataToCoreSystem(legacyData) {
-  // This function converts the old layoutData structure to the new core system
-  // Implementation depends on the legacy structure
-  console.warn("Legacy data conversion not implemented. Please use the new ZIP processing.");
 }
