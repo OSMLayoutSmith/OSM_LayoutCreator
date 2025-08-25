@@ -64,10 +64,11 @@ function getAllSystemLanguages() {
 // Helper function to update layout information from form
 function updateLayoutFromForm() {
   const layoutTitle = document.getElementById("layoutDesc").value;
+  const selection = document.getElementById("layoutDescLang").value;
   const description = document.getElementById("layoutREADME").value;
   
   if (layoutTitle) {
-    setLayoutDownloadDescription(layoutTitle);
+    setLayoutDownloadDescription(selection,layoutTitle);
   }
   
   if (description) {

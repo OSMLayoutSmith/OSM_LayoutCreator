@@ -23,6 +23,10 @@
     setBranch(branch) { this.branch = branch; }
     addOption(code, lang, description) { this.options.push([code, lang, description]); }
     removeOption(code) { this.options = this.options.filter(item => item[0] !== code); }
+    updateOption(code,description) {
+      const option = this.getOptionByCode(code);
+      if (option) option[2] = description;
+    }
     getOptionByCode(code) { return this.options.find(item => item[0] === code); }
     getOptions() { return this.options; }
     createOptions() {

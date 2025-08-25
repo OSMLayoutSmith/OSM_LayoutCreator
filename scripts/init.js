@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
               ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
               const resizedDataUrl = canvas.toDataURL("image/png");
-              currentIconData = resizedDataUrl.split(",")[1]; 
+              currentIconData = resizedDataUrl.split(",")[1];
 
               const resizedImg = document.createElement("img");
               resizedImg.src = resizedDataUrl;
@@ -187,12 +187,10 @@ function setLayoutREADME(readme) {
   }
 }
 
-function setLayoutDownloadDescription(description) {
+function setLayoutDownloadDescription(selection, description) {
   const activeLayout = folderManager.getActiveLayout();
-  if (activeLayout && description) {
-    activeLayout.metadata.options.forEach(option => {
-      option[2] = description;
-    });
+  if (activeLayout && selection && description) {
+    activeLayout.metadata.updateOption(selection,description);
   }
 }
 
@@ -218,8 +216,10 @@ window.setLayoutREADME = setLayoutREADME;
     return code.toUpperCase().slice(0, 2);
   };
 
+  const select = document.getElementById("layoutDescLang");
   function renderLanguageGrid() {
     buttonsGrid.innerHTML = "";
+    select.innerHTML = "";
 
     if (selectedLanguages.length === 0) {
       selectedLanguages = ['en'];
@@ -247,6 +247,12 @@ window.setLayoutREADME = setLayoutREADME;
         }
 
         row.appendChild(btn);
+
+        //manage metadatas
+        const option = document.createElement("option");
+        option.value = code;
+        option.textContent = `Language: ${code}`;
+        select.appendChild(option);
       }
 
       buttonsGrid.appendChild(row);
@@ -286,6 +292,11 @@ window.setLayoutREADME = setLayoutREADME;
     renderLanguageGrid();
   }
 
+  select.onchange = () => {
+    descArea.value = getDescriptionByLang(select.value) || "";
+  };
+
+  const descArea = document.getElementById("layoutDesc");
   languageSelect.addEventListener("change", (e) => {
     const selectedCode = e.target.value;
     if (selectedCode) {
@@ -293,6 +304,11 @@ window.setLayoutREADME = setLayoutREADME;
       e.target.value = "";
     }
   });
+
+  function getDescriptionByLang(code) {
+    const activeLayout = folderManager?.getActiveLayout().metadata.getOptionByCode(code);
+    return activeLayout ? activeLayout[2] : "";
+  }
 
   document.addEventListener("DOMContentLoaded", () => {
     const buttonModalSelect = document.getElementById("buttonLanguageSelect");

@@ -8,8 +8,8 @@
 }(typeof self !== "undefined" ? self : this, function () {
 
     class Layout {
-        constructor(name) { 
-            this.name = name; this.buttons = [];        
+        constructor(name) {
+            this.name = name; this.buttons = [];
         }
         setName(newName) { this.name = newName; }
         addButton(button) { this.buttons.push(button); }
@@ -21,11 +21,24 @@
             }
         }
         updateFolder(folder) { this.buttons.forEach(button => button.setFolder(folder)); }
-        generateButtons(lang = "en") { return this.buttons.map(b => b.toString(lang)).join(""); }
+        generateButtons(lang = "en") {
+            let result = "";
+            for (let i = 0; i < this.buttons.length; i++) {
+                if (i % 3 === 0) {
+                    result += "      <row>\n";
+                }
+                result += this.buttons[i].toString(lang);
+                if ((i % 3 === 2) || (i === this.buttons.length - 1)) {
+                    result += "      </row>\n";
+                }
+            }
+            return result;
+        }
+
 
         toString(lang = "en") {
             if (this.name === "root") {
-                let defaults = '      <button type="textnote" icon="text_32x32" />\n      <button type="voicerec" icon="voice_32x32" />\n      <button type="picture" icon="camera_32x32" />\n'
+                let defaults = '      <row>\n        <button type="textnote" icon="text_32x32" />\n        <button type="voicerec" icon="voice_32x32" />\n        <button type="picture" icon="camera_32x32" />\n      </row>\n'
                 return `  <layout name="${this.name}">\n${defaults}${this.generateButtons(lang)}  </layout>\n`;
             }
             return `  <layout name="${this.name}">\n${this.generateButtons(lang)}  </layout>\n`;
