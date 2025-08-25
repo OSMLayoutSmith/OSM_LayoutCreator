@@ -148,14 +148,13 @@
             while ((match = layoutRegex.exec(xmlStr)) !== null) {
                 const layoutNameAttr = match[1];
 
-                // Buscar si el layout ya existe, si no crearlo
                 let layout = xmlFile.layouts[layoutNameAttr];
                 if (!layout) {
                     layout = new Layout(layoutNameAttr);
                     xmlFile.addLayout(layout);
                 }
 
-                // Botones
+                // find <button .../>
                 const buttonRegex = /<button\b([^>]*)\/>/gi;
                 let btnMatch;
                 while ((btnMatch = buttonRegex.exec(match[2])) !== null) {
@@ -164,23 +163,28 @@
                     const type = this._extractAttribute(attrs, 'type') || "";
                     let label = this._extractAttribute(attrs, 'label') || "";
                     const iconPath = this._extractAttribute(attrs, 'icon') || "";
-                    const targetLayout = this._extractAttribute(attrs, 'targetlayout') || "#";
 
-                    const iconFile = iconPath.split("/").pop();
+                    // 👇 supports targetlayout & targetLayout
+                    let targetLayout = this._extractAttribute(attrs, 'targetlayout');
+                    if (!targetLayout) {
+                        targetLayout = this._extractAttribute(attrs, 'targetLayout');
+                    }
+                    targetLayout = targetLayout || "#";
 
-                    // Si no hay label
+                    const iconFile = iconPath ? iconPath.split("/").pop() : "";
+
                     if (!label) {
                         if (layoutNameAttr === "root") {
-                            // en root -> no agregar este botón
                             continue;
                         } else {
-                            // en otros layouts -> usar el type como label
                             label = type;
                         }
                     }
 
-                    // Buscar si el botón ya existe en este layout
-                    let button = layout.buttons.find(b => b.icon === iconFile && b.type === type);
+                    let button = layout.buttons.find(
+                        b => b.icon === iconFile && b.type === type && b.targetLayout === targetLayout
+                    );
+
                     if (!button) {
                         const btnData = await this._loadIconBase64(zip, layoutName, iconFile);
                         button = new Button(layoutName, layoutNameAttr, type, {}, iconFile, targetLayout);
@@ -193,7 +197,6 @@
             }
             return xmlFile;
         }
-
 
         _extractAttribute(attrString, attrName) {
             const regex = new RegExp(`${attrName}\\s*=\\s*"([^"]*)"`, 'i');

@@ -27,14 +27,14 @@
             const label = this.labels[lang] || ""; // label may be different for each language
             //default icons
             if (this.type === "voicerec" || this.type === "picture" || this.type === "textnote") {
-                return `        <button type="${this.type}" icon="${this.icon}"/>\n`;
+                return `        <button type="${this.type}" icon="${this.icon!==""?this.icon:"#"}"/>\n`;
             }
             //page buttons
             if (this.type === "page") {
-                return `        <button type="page" label="${label}" icon="${this.folder}_icons/${this.icon}" targetLayout="${this.targetLayout}"/>\n`;
+                return `        <button type="page" label="${label}" icon="${this.folder}_icons/${this.icon!==""?this.icon:"#"}" targetLayout="${this.targetLayout}"/>\n`;
             }
             //default buttons
-            return `        <button type="${this.type}" label="${label}" icon="${this.folder}_icons/${this.icon}"/>\n`;
+            return `        <button type="${this.type}" label="${label}" icon="${this.folder}_icons/${this.icon!==""?this.icon:"#"}"/>\n`;
         }
     }
 
