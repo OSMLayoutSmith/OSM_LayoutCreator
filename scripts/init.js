@@ -290,6 +290,7 @@ window.setLayoutREADME = setLayoutREADME;
     }
 
     renderLanguageGrid();
+    descArea.value = getDescriptionByLang(select.value) || ""; 
   }
 
   select.onchange = () => {
