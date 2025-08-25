@@ -50,7 +50,7 @@ function initializeFolderManager() {
   activeLayout.xmlFile.addLayout(rootLayout);
   activeLayout.xmlFile.addLanguage("en");
 
-  activeLayout.metadata = new Metadata(defaultLayoutName, "OSMBot", "osmtracker-android-layouts", "master");
+  activeLayout.metadata = new Metadata(defaultLayoutName, "OSMLayoutSmith", "osmtracker-custom-layouts", "master");
   activeLayout.metadata.addOption("en", "English", "Default English layout");
 
 }
