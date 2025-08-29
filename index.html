@@ -173,18 +173,29 @@ here a text sample"></textarea>
 
             <!-- Download Settings -->
             <div id="downloadSettings">
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <label for="useDefault">Using default config</label>
+                    <input type="checkbox" id="useDefault" style ="width: auto;" checked onchange="toggleDefaultConfig()">
+                </div>
+
                 <div class="form-group"><label for="layoutRepoName">Layout Name</label>
                     <input type="text" id="layoutRepoName" placeholder="ie: maxspeed">
                 </div>
                 <div class="form-group"><label for="repoName">Repository Name</label>
-                    <input type="text" id="repoName" placeholder="ie: osmtracker-custom-layouts">
+                    <input type="text" id="repoName" value="osmtracker-android-layouts" disabled>
                 </div>
                 <div class="form-group"><label for="repoOwner">Repository Owner</label>
-                    <input type="text" id="repoOwner" placeholder="OSMLayoutSmith">
+                    <input type="text" id="repoOwner" value="OSMLayoutSmith" disabled>
                 </div>
                 <div class="form-group"><label for="repoBranch">Branch</label>
-                    <input type="text" id="repoBranch" placeholder="master">
+                    <input type="text" id="repoBranch" value="master" disabled>
                 </div>
+            
+                <div class="form-group">
+                    <label id="tokenLabel"  for="gh_token" style = "display: none;">Have your own token? place it here</label>
+                    <input type="text" id="gh_token" style = "display: none;" placeholder="gh_abc123..." autocomplete="off">
+                </div>
+
                 <button class="add-button" id="processDownload" onclick="processDownloadLayout()">Download</button>
                 <p style="font-size: 13px; margin-top: 10px; color: #4a5568;">
                     Expected repository structure:
@@ -204,16 +215,28 @@ repo/
 
             <!-- Upload Settings -->
             <div id="uploadSettings" style="display:none;">
-                <div class="form-group"><label for="upstreamOwner">Upstream Owner</label><input type="text"
-                        id="upstreamOwner" value="Kevin-Salazar-itcr"></div>
-                <div class="form-group"><label for="upstreamRepo">Upstream Repo</label><input type="text"
-                        id="upstreamRepo" value="disposiciones"></div>
-                <div class="form-group"><label for="baseBranch">Base Branch</label><input type="text" id="baseBranch"
-                        value="main"></div>
-                <div class="form-group"><label for="forkRepo">Fork Repo</label><input type="text" id="forkRepo"
-                        value="disposiciones"></div>
-                <button class="add-button" id="processUpload" onclick="processUploadToGithub()">Upload to
-                    GitHub</button>
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <label for="useDefaultUpload">Using default config</label>
+                    <input type="checkbox" id="useDefaultUpload" style ="width: auto;" checked onchange="toggleDefaultConfigUpload()">
+                </div>
+                <div class="form-group">
+                    <label for="upstreamOwner">Upstream Owner</label>
+                    <input type="text" id="upstreamOwner" value="OSMLayoutSmith">
+                </div>
+                <div class="form-group">
+                    <label for="upstreamRepo">Upstream Repo</label>
+                    <input type="text" id="upstreamRepo" value="osmtracker-custom-layouts"></div>
+                <div class="form-group">
+                    <label for="baseBranch">Branch</label>
+                    <input type="text" id="baseBranch" value="master">
+                </div>
+                <div class="form-group">
+                    <label id="tokenLabel_upload"  for="gh_token_upload" style = "display: none;">Have your own token? place it here</label>
+                    <input type="text" id="gh_token_upload" style = "display: none;" placeholder="gh_abc123..." autocomplete="off">
+                </div>
+                <button class="add-button" id="processUpload" onclick="processUploadToGithub()">
+                    Upload to GitHub
+                </button>
             </div>
 
             <!-- ZIP Upload -->
