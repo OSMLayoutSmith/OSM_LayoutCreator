@@ -97,9 +97,9 @@
             this.getLayout(layoutName).xmlFile.addLanguage(lang);
         }
 
-        addButton(layoutName, originLayout, type, labels, icon, targetLayout = "#", iconBase64 = null) {
+        addButton(layoutName, originLayout, type, labels, icon, targetlayout = "#", iconBase64 = null) {
             const layoutObj = this.getLayout(layoutName);
-            const btn = new Button(layoutName, originLayout, type, labels, icon, targetLayout);
+            const btn = new Button(layoutName, originLayout, type, labels, icon, targetlayout);
             if (iconBase64) btn.data = iconBase64;
             layoutObj.xmlFile.newButton(btn);
             layoutObj.icons[icon] = iconBase64 || "";

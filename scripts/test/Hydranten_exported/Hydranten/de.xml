@@ -4,14 +4,14 @@
       <button type="voicerec" label="" icon="Hydranten_icons/voice_32x32"/>
       <button type="picture" label="" icon="Hydranten_icons/camera_32x32"/>
       <button type="textnote" label="" icon="Hydranten_icons/text_32x32"/>
-      <button type="page" label="Gebaeude" icon="Hydranten_icons/building.png" targetLayout="Gebaeude"/>
-      <button type="page" label="Unterflur Hydrant Strasse" icon="Hydranten_icons/underground_lane.png" targetLayout="Unterflur_Hydrant_Strasse"/>
-      <button type="page" label="Unterflur Hydrant Fussweg" icon="Hydranten_icons/underground_sidewalk.png" targetLayout="Unterflur_Hydrant_Fussweg"/>
-      <button type="page" label="Unterflur Hydrant Parkplatz" icon="Hydranten_icons/underground_parking_lot.png" targetLayout="Unterflur_Hydrant_Parkplatz"/>
-      <button type="page" label="Unterflur Hydrant Gruen" icon="Hydranten_icons/underground_green.png" targetLayout="Unterflur_Hydrant_Gruen"/>
-      <button type="page" label="Oberflur Hydrant" icon="Hydranten_icons/pillar.png" targetLayout="Oberflur_Hydrant"/>
-      <button type="page" label="Saugstelle" icon="Hydranten_icons/pond.png" targetLayout="Saugstelle"/>
-      <button type="page" label="weitere-H" icon="Hydranten_icons/wall.png" targetLayout="weitere_H"/>
+      <button type="page" label="Gebaeude" icon="Hydranten_icons/building.png" targetlayout="Gebaeude"/>
+      <button type="page" label="Unterflur Hydrant Strasse" icon="Hydranten_icons/underground_lane.png" targetlayout="Unterflur_Hydrant_Strasse"/>
+      <button type="page" label="Unterflur Hydrant Fussweg" icon="Hydranten_icons/underground_sidewalk.png" targetlayout="Unterflur_Hydrant_Fussweg"/>
+      <button type="page" label="Unterflur Hydrant Parkplatz" icon="Hydranten_icons/underground_parking_lot.png" targetlayout="Unterflur_Hydrant_Parkplatz"/>
+      <button type="page" label="Unterflur Hydrant Gruen" icon="Hydranten_icons/underground_green.png" targetlayout="Unterflur_Hydrant_Gruen"/>
+      <button type="page" label="Oberflur Hydrant" icon="Hydranten_icons/pillar.png" targetlayout="Oberflur_Hydrant"/>
+      <button type="page" label="Saugstelle" icon="Hydranten_icons/pond.png" targetlayout="Saugstelle"/>
+      <button type="page" label="weitere-H" icon="Hydranten_icons/wall.png" targetlayout="weitere_H"/>
   </layout>
   <layout name="Gebaeude">
       <button type="voicerec" label="" icon="Hydranten_icons/voice_32x32"/>

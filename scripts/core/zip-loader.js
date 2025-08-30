@@ -164,12 +164,12 @@
                     let label = this._extractAttribute(attrs, 'label') || "";
                     const iconPath = this._extractAttribute(attrs, 'icon') || "";
 
-                    // 👇 supports targetlayout & targetLayout
-                    let targetLayout = this._extractAttribute(attrs, 'targetlayout');
-                    if (!targetLayout) {
-                        targetLayout = this._extractAttribute(attrs, 'targetLayout');
+                    // 👇 supports targetlayout & targetlayout
+                    let targetlayout = this._extractAttribute(attrs, 'targetlayout');
+                    if (!targetlayout) {
+                        targetlayout = this._extractAttribute(attrs, 'targetlayout');
                     }
-                    targetLayout = targetLayout || "#";
+                    targetlayout = targetlayout || "#";
 
                     const iconFile = iconPath ? iconPath.split("/").pop() : "";
 
@@ -182,12 +182,12 @@
                     }
 
                     let button = layout.buttons.find(
-                        b => b.icon === iconFile && b.type === type && b.targetLayout === targetLayout
+                        b => b.icon === iconFile && b.type === type && b.targetlayout === targetlayout
                     );
 
                     if (!button) {
                         const btnData = await this._loadIconBase64(zip, layoutName, iconFile);
-                        button = new Button(layoutName, layoutNameAttr, type, {}, iconFile, targetLayout);
+                        button = new Button(layoutName, layoutNameAttr, type, {}, iconFile, targetlayout);
                         button.data = btnData;
                         layout.addButton(button);
                     }

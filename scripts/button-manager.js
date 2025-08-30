@@ -34,7 +34,7 @@ function promptAddButton() {
       "tag", // type
       {}, // labels (will be populated)
       iconFileName, // icon
-      "#" // targetLayout
+      "#" // targetlayout
     );
 
     // Add labels for all selected languages
@@ -134,9 +134,14 @@ function handleSubfolder() {
           button.labels.en?.replace(/\s+/g, "_") + "_layout" ||
           getDisplayLabel(button).replace(/\s+/g, "_") + "_layout";
 
+        console.log("punto de debug");
+        console.log(button.labels.en);
+        console.log(getDisplayLabel(button));
+        console.log(sublayoutName);
+        console.log("punto de debug: fin");
         // Change button type to page
         button.type = "page";
-        button.targetLayout = sublayoutName;
+        button.targetlayout = sublayoutName;
 
         // Create the new layout in the XML file
         const activeLayout = folderManager.getActiveLayout();
@@ -192,7 +197,6 @@ function deleteButtonFromModal() {
   });
 }
 
-// Modal de confirmación reutilizando el HTML existente
 function showConfirm(message, onConfirm) {
   const confirmModal = document.getElementById("confirmModal");
   if (!confirmModal) {
@@ -203,7 +207,6 @@ function showConfirm(message, onConfirm) {
   document.getElementById("confirmMessage").textContent = message;
   confirmModal.style.display = "flex";
 
-  // Limpia eventos previos
   const yesBtn = document.getElementById("confirmYesBtn");
   const noBtn = document.getElementById("confirmNoBtn");
   yesBtn.onclick = function () {
@@ -224,9 +227,9 @@ function getCurrentMockupLayoutName() {
 }
 
 // Helper function to navigate to a sublayout
-function navigateToSublayout(targetLayoutName) {
-  if (!currentMockupPath.includes(targetLayoutName)) {
-    currentMockupPath.push(targetLayoutName);
+function navigateToSublayout(targetlayoutName) {
+  if (!currentMockupPath.includes(targetlayoutName)) {
+    currentMockupPath.push(targetlayoutName);
     updateMockup();
   }
 }

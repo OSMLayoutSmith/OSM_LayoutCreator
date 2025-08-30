@@ -95,8 +95,8 @@ function renderButtonList() {
       listElement.appendChild(div);
 
       // If it's a page button, render its sublayout
-      if (button.type === "page" && button.targetLayout) {
-        const sublayout = layouts[button.targetLayout];
+      if (button.type === "page" && button.targetlayout) {
+        const sublayout = layouts[button.targetlayout];
         if (sublayout) {
           renderLevel(sublayout, level + 1);
         }
@@ -166,8 +166,8 @@ function updateMockup() {
     // Handle click events
     if (button.type === "page") {
       btnElement.onclick = () => {
-        if (button.targetLayout) {
-          currentMockupPath.push(button.targetLayout);
+        if (button.targetlayout) {
+          currentMockupPath.push(button.targetlayout);
           updateMockup();
         }
       };
