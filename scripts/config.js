@@ -1,4 +1,4 @@
-const { use } = require("react");
+// const { use } = require("react");
 
 function toggleConfigMode() {
   const mode = document.getElementById("configMode").value;
