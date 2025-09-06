@@ -240,6 +240,7 @@ window.setLayoutREADME = setLayoutREADME;
         btn.className = "lang-btn";
         btn.textContent = getInitials(code);
         btn.dataset.code = code;
+        btn.setAttribute("translate", "no"); 
 
         if (code === 'en' && selectedLanguages.length === 1) {
           btn.disabled = true;
