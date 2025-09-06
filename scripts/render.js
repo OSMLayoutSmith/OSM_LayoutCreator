@@ -1,5 +1,3 @@
-const { folder } = require("jszip");
-
 let currentMockupPath = ["root"];
 
 // Variable global para el botón que se está editando
