@@ -15,7 +15,7 @@ function promptAddButton() {
     }
 
     // Get current layout from core system
-    const currentLayoutName = folderManager.activeLayout;
+    const currentLayoutName = window.folderManager.activeLayout;
     const layout = findLayoutByName(currentLayoutName);
 
     if (!layout) {
@@ -25,7 +25,7 @@ function promptAddButton() {
 
     // Create button using core Button class
     const iconFileName = iconUploader.files[0].name;
-    const activeLayout = folderManager.getActiveLayout();
+    const activeLayout = window.folderManager.getActiveLayout();
     const layoutName = activeLayout.metadata.layoutName !==""?activeLayout.metadata.layoutName:currentLayoutName;
 
     const button = new Button(
@@ -139,7 +139,7 @@ function handleSubfolder() {
         button.targetlayout = sublayoutName;
 
         // Create the new layout in the XML file
-        const activeLayout = folderManager.getActiveLayout();
+        const activeLayout = window.folderManager.getActiveLayout();
         const newLayout = new Layout(sublayoutName);
         activeLayout.xmlFile.addLayout(newLayout);
 
