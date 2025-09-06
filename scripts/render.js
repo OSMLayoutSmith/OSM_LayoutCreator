@@ -135,7 +135,7 @@ function updateMockup() {
   });
 
   // Get current layout
-  const currentLayoutName = folderManager.activeLayout;
+  const currentLayoutName = getCurrentMockupLayoutName();
   const currentLayout = findLayoutByName(currentLayoutName);
 
   if (!currentLayout) {
@@ -183,6 +183,14 @@ function goBackMockup() {
     currentMockupPath.pop();
     updateMockup();
   }
+}
+
+// Function to get current mockup layout name
+function getCurrentMockupLayoutName() {
+  if (currentMockupPath && currentMockupPath.length > 0) {
+    return currentMockupPath[currentMockupPath.length - 1];
+  }
+  return "root";
 }
 
 // Function to get appropriate label for display
@@ -283,3 +291,4 @@ window.prepareButtonModal = prepareButtonModal;
 window.saveButtonLabels = saveButtonLabels;
 window.getDisplayLabel = getDisplayLabel;
 window.initializeButtonLabels = initializeButtonLabels;
+window.getCurrentMockupLayoutName = getCurrentMockupLayoutName;

@@ -61,6 +61,7 @@ function processZipFile() {
             renderButtonList();
             updateMockup();
             showAlert(`Layout "${layoutName}" loaded successfully from ZIP.`);
+            console.log(window.folderManager.toString());
         } catch (err) {
             console.error("Error processing zip file:", err);
             showAlert("Error processing zip file: " + err.message, "Error");

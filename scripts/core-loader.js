@@ -26,6 +26,8 @@ async function loadCore() {
         await loadScript('./core/zip-loader.js');
         await loadScript('./core/folder-manager.js');
         
+        console.log('Core modules loaded successfully');
+        
         // Disparar evento para indicar que el core está listo
         window.dispatchEvent(new CustomEvent('coreLoaded'));
         

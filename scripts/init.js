@@ -43,8 +43,8 @@ function initializeFolderManager() {
   const defaultLayoutName = "default_layout";
   currentLayoutName = defaultLayoutName;
 
-  window.folderManager.createLayout(defaultLayoutName);
-  const activeLayout = window.folderManager.getActiveLayout();
+  folderManager.createLayout(defaultLayoutName);
+  const activeLayout = folderManager.getActiveLayout();
 
   const rootLayout = new Layout("root");
   activeLayout.xmlFile.addLayout(rootLayout);
@@ -54,6 +54,7 @@ function initializeFolderManager() {
   activeLayout.metadata.addOption("en", "English", "Default English layout");
 
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   // Wait for core scripts to load
@@ -154,19 +155,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Helper functions to work with the core system
 function getCurrentLayout() {
-  const activeLayout = window.folderManager.getActiveLayout();
+  const activeLayout = folderManager.getActiveLayout();
   if (!activeLayout) return null;
   return activeLayout.xmlFile.layouts["root"];
 }
 
 function findLayoutByName(layoutName) {
-  const activeLayout = window.folderManager.getActiveLayout();
+  const activeLayout = folderManager.getActiveLayout();
   if (!activeLayout) return null;
   return activeLayout.xmlFile.layouts[layoutName];
 }
 
 function addLanguageToSystem(langCode) {
-  const activeLayout = window.folderManager.getActiveLayout();
+  const activeLayout = folderManager.getActiveLayout();
   if (activeLayout) {
     activeLayout.xmlFile.addLanguage(langCode);
 
@@ -180,14 +181,14 @@ function addLanguageToSystem(langCode) {
 }
 
 function setLayoutREADME(readme) {
-  const activeLayout = window.folderManager.getActiveLayout();
+  const activeLayout = folderManager.getActiveLayout();
   if (activeLayout && readme) {
     activeLayout.readme = readme;
   }
 }
 
 function setLayoutDownloadDescription(selection, description) {
-  const activeLayout = window.folderManager.getActiveLayout();
+  const activeLayout = folderManager.getActiveLayout();
   if (activeLayout && selection && description) {
     activeLayout.metadata.updateOption(selection,description);
   }
@@ -239,7 +240,6 @@ window.setLayoutREADME = setLayoutREADME;
         btn.className = "lang-btn";
         btn.textContent = getInitials(code);
         btn.dataset.code = code;
-        btn.setAttribute("translate", "no"); 
 
         if (code === 'en' && selectedLanguages.length === 1) {
           btn.disabled = true;

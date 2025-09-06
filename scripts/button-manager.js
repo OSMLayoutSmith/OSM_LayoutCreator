@@ -15,7 +15,7 @@ function promptAddButton() {
     }
 
     // Get current layout from core system
-    const currentLayoutName = window.folderManager.activeLayout;
+    const currentLayoutName = getCurrentMockupLayoutName();
     const layout = findLayoutByName(currentLayoutName);
 
     if (!layout) {
@@ -25,8 +25,8 @@ function promptAddButton() {
 
     // Create button using core Button class
     const iconFileName = iconUploader.files[0].name;
-    const activeLayout = window.folderManager.getActiveLayout();
-    const layoutName = activeLayout.metadata.layoutName !==""?activeLayout.metadata.layoutName:currentLayoutName;
+    const activeLayout = folderManager.getActiveLayout();
+    const layoutName = activeLayout.metadata.layoutName || currentLayoutName;
 
     const button = new Button(
       layoutName, // folder
@@ -134,12 +134,17 @@ function handleSubfolder() {
           button.labels.en?.replace(/\s+/g, "_") + "_layout" ||
           getDisplayLabel(button).replace(/\s+/g, "_") + "_layout";
 
+        console.log("punto de debug");
+        console.log(button.labels.en);
+        console.log(getDisplayLabel(button));
+        console.log(sublayoutName);
+        console.log("punto de debug: fin");
         // Change button type to page
         button.type = "page";
         button.targetlayout = sublayoutName;
 
         // Create the new layout in the XML file
-        const activeLayout = window.folderManager.getActiveLayout();
+        const activeLayout = folderManager.getActiveLayout();
         const newLayout = new Layout(sublayoutName);
         activeLayout.xmlFile.addLayout(newLayout);
 
@@ -212,6 +217,7 @@ function showConfirm(message, onConfirm) {
     confirmModal.style.display = "none";
   };
 }
+
 
 // Helper function to navigate to a sublayout
 function navigateToSublayout(targetlayoutName) {

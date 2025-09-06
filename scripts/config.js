@@ -1,3 +1,5 @@
+const { use } = require("react");
+
 function toggleConfigMode() {
   const mode = document.getElementById("configMode").value;
   document.getElementById("downloadSettings").style.display =
@@ -165,8 +167,9 @@ async function processUploadToGithub() {
     }
 
     const result = await response.json();
+    console.log("✅ Upload result:", result);
 
-    showAlert(`Layout "${layoutName}" uploaded successfully!<br><a href="${result.url}" target="_blank">${result.url}</a>`);
+    showAlert(`Layout "${layoutName}" uploaded successfully!\nURL: ${result.url}`);
 
     return result;
   } catch (error) {
