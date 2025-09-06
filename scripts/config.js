@@ -1,5 +1,3 @@
-const { use } = require("react");
-
 function toggleConfigMode() {
   const mode = document.getElementById("configMode").value;
   document.getElementById("downloadSettings").style.display =
