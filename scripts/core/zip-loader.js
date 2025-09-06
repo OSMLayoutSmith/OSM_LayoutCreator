@@ -128,7 +128,6 @@
             const optionRegex = /<option[^>]*iso\s*=\s*"([^"]+)"[^>]*name\s*=\s*"([^"]+)"[^>]*>([^<]*)<\/option>/gi;
             let opt;
             while ((opt = optionRegex.exec(xmlStr)) !== null) {
-                console.log("Adding metadata option:", opt[1], opt[2], opt[3]);
                 metadata.addOption(opt[1], opt[2], opt[3].trim());
             }
 

@@ -27,7 +27,13 @@ function showAlert(message, title = "Information") {
   }
 
   document.getElementById("alertTitle").innerText = title;
-  document.getElementById("alertMessage").innerText = message;
+  
+  if (message.includes('<') || message.includes('>')) {
+    document.getElementById("alertMessage").innerHTML = message.replace(/\n/g, '<br>');
+  } else {
+    document.getElementById("alertMessage").innerText = message;
+  }
+  
   modal.classList.add("show");
 }
 

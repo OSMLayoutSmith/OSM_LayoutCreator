@@ -133,12 +133,7 @@ function handleSubfolder() {
         const sublayoutName =
           button.labels.en?.replace(/\s+/g, "_") + "_layout" ||
           getDisplayLabel(button).replace(/\s+/g, "_") + "_layout";
-
-        console.log("punto de debug");
-        console.log(button.labels.en);
-        console.log(getDisplayLabel(button));
-        console.log(sublayoutName);
-        console.log("punto de debug: fin");
+          
         // Change button type to page
         button.type = "page";
         button.targetlayout = sublayoutName;

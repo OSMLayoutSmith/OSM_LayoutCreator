@@ -167,9 +167,8 @@ async function processUploadToGithub() {
     }
 
     const result = await response.json();
-    console.log("✅ Upload result:", result);
 
-    showAlert(`Layout "${layoutName}" uploaded successfully!\nURL: ${result.url}`);
+    showAlert(`Layout "${layoutName}" uploaded successfully!<br><a href="${result.url}" target="_blank">${result.url}</a>`);
 
     return result;
   } catch (error) {
